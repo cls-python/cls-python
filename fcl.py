@@ -363,12 +363,13 @@ class FiniteCombinatoryLogic(object):
         return result
 
 if __name__ == "__main__":
-    repo = {"id": Arrow(Constructor("Int"), Constructor("Int")),
-            "x": Constructor("Int"),
-            "pruned": Arrow(Constructor("Impossible"), Constructor("Int")),
+    repo = {"id": Intersection(Arrow(Constructor("Int"), Constructor("Int")),
+                               Arrow(Constructor("Foo"), Intersection(Constructor("Bar"), Constructor("Baz")))),
+            "x": Intersection(Constructor("Int"), Constructor("Foo2")),
+            "pruned": Arrow(Constructor("Impossible"), Intersection(Constructor("Int"), Constructor("Foo"))),
             "loop" : Arrow(Constructor("Impossible"), Constructor("Impossible"))
             }
-    inhab = FiniteCombinatoryLogic(repo, Subtypes({}))
-    result = inhab.inhabit(Constructor("Int"))
+    inhab = FiniteCombinatoryLogic(repo, Subtypes({"Foo2": {"Foo"}}))
+    result = inhab.inhabit(Intersection(Constructor("Int"), Constructor("Baz")))
     for rule in result:
         print(rule)
