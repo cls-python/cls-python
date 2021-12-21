@@ -250,7 +250,7 @@ class FiniteCombinatoryLogic(object):
                            combinator_type: list[list[MultiArrow]]) -> Tuple[list[Rule], bool]:
         def cover_instr(ms: list[MultiArrow]) -> CoverMachineInstruction:
             splits: list[(MultiArrow, set[Type])] = \
-                list(map(lambda m: (m, filter(lambda b: self.subtypes.check_subtype(m[1], b), to_cover)), ms))
+                list(map(lambda m: (m, set(filter(lambda b: self.subtypes.check_subtype(m[1], b), to_cover))), ms))
             return self._cover(splits, to_cover)
 
         covers: list[MultiArrow] = self._cover_machine([], list(map(cover_instr, combinator_type)))
