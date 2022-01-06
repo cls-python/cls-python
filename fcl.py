@@ -367,7 +367,7 @@ if __name__ == "__main__":
                                Arrow(Constructor("Foo"), Intersection(Constructor("Bar"), Constructor("Baz")))),
             "x": Intersection(Constructor("Int"), Constructor("Foo2")),
             "pruned": Arrow(Constructor("Impossible"), Intersection(Constructor("Int"), Constructor("Foo"))),
-            "loop" : Arrow(Constructor("Impossible"), Constructor("Impossible"))
+            "loop": Arrow(Constructor("Impossible"), Constructor("Impossible"))
             }
     inhab = FiniteCombinatoryLogic(repo, Subtypes({"Foo2": {"Foo"}}))
     result = inhab.inhabit(Intersection(Constructor("Int"), Constructor("Baz")))
