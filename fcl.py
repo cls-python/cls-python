@@ -1,16 +1,21 @@
 import functools
 import itertools
-from typing import TypeAlias, Callable, Tuple
+from collections import deque
+from typing import TypeAlias, Callable, Tuple, Iterable, Any
 from multiprocessing import Pool
 import os
 from collections.abc import Iterator
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
 from itertools import chain
-from functools import partial
+from functools import partial, cached_property
 
+from enumeration import Lazy
+from enumeration2 import Enumeration, ComputationStep, EmptyStep
 from itypes import *
 from subtypes import Subtypes
+
+import cProfile
 
 MultiArrow: TypeAlias = Tuple[list[Type], Type]
 State: TypeAlias = list['MultiArrow']
@@ -52,8 +57,199 @@ class Apply(Rule):
         return f"@({str(self.function_type)}, {str(self.argument_type)}) : {self.target}"
 
 
-def _split_repo(c: object, ty: Type) -> Tuple[object, list[list[MultiArrow]]]:
-    return c, FiniteCombinatoryLogic.split_ty(ty)
+@dataclass(frozen=True)
+class Tree(object):
+    rule: Rule = field(init=True)
+    children: list['Tree'] = field(init=True, default_factory=lambda: [])
+
+    class Evaluator(ComputationStep):
+        def __init__(self, outer: 'Tree', results: list[Any]):
+            self.outer: 'Tree' = outer
+            self.results = results
+
+        def __iter__(self) -> Iterator[ComputationStep]:
+            match self.outer.rule:
+                case Combinator(_, c):
+                    self.results.append(c)
+                case Apply(_, _, _):
+                    f_arg = list()
+                    yield Tree.Evaluator(self.outer.children[0], f_arg)
+                    yield Tree.Evaluator(self.outer.children[1], f_arg)
+                    self.results.append(partial(f_arg[0])(f_arg[1]))
+            yield EmptyStep()
+
+    def evaluate(self) -> Any:
+        result: list[Any] = []
+        self.Evaluator(self, result).run()
+        return result[0]
+
+    def __str__(self):
+        match self.rule:
+            case Combinator(_, _): return str(self.rule)
+            case Apply(_, _, _): return f"{str(self.children[0])}({str(self.children[1])})"
+            case _: return f"{str(self.rule)} @ {deep_str(self.children)}"
+
+@dataclass(frozen=True)
+class InhabitationResult(object):
+    targets: list[Type] = field(init=True)
+    rules: set[Rule] = field(init=True)
+    _grouped_rules: Lazy[dict[Type, set[Rule]]] = field(init=False, repr=False, compare=False, hash=False)
+    _non_empty: Lazy[bool] = field(init=False, repr=False, compare=False, hash=False)
+    _infinite: Lazy[bool] = field(init=False, repr=False, compare=False, hash=False)
+    enumeration_map: dict[Type, Enumeration[Tree]] = field(init=False, repr=False, compare=False, hash=False)
+    _raw: Lazy[Enumeration[list[Tree]]] = field(init=False, repr=False, compare=False, hash=False)
+    _evaluated: Lazy[Enumeration[list[object]]] = field(init=False, repr=False, compare=False, hash=False)
+
+    def __post_init__(self):
+        object.__setattr__(self, "_grouped_rules", Lazy.once(self.__grouped_rules))
+        object.__setattr__(self, "_non_empty", Lazy.once(self.__non_empty))
+        object.__setattr__(self, "_infinite", Lazy.once(self.__infinite))
+        object.__setattr__(self, "enumeration_map", self.__enumeration_map())
+        object.__setattr__(self, "_raw", Lazy.once(self.__raw))
+        object.__setattr__(self, "_evaluated", self._raw.map(self.__evaluated))
+
+    @property
+    def grouped_rules(self) -> dict[Type, set[Rule]]:
+        return self._grouped_rules.value()
+
+    def __grouped_rules(self) -> dict[Type, set[Rule]]:
+        result: dict[Type, set[Rule]] = dict()
+        for rule in self.rules:
+            group: set[Rule] = result.get(rule.target)
+            if group:
+                group.add(rule)
+            else:
+                result[rule.target] = {rule}
+        return result
+
+    def check_empty(self, target: Type) -> bool:
+        for rule in self.grouped_rules.get(target, {Failed(target)}):
+            if isinstance(rule, Failed):
+                return True
+        return False
+
+    def __non_empty(self):
+        for target in self.targets:
+            if self.check_empty(target):
+                return False
+        return True
+
+    def __bool__(self) -> bool:
+        return self._non_empty.value()
+
+    @property
+    def infinite(self) -> bool:
+        return self._infinite.value()
+
+    def __infinite(self) -> bool:
+        if not self:
+            return False
+
+        reachable: dict[Type, set[Type]] = dict()
+        for (target, rules) in self.grouped_rules.items():
+            entry: set[Type] = set()
+            for rule in rules:
+                match rule:
+                    case Apply(target, lhs, rhs):
+                        next_reached: set[Type] = {lhs, rhs}
+                        entry.update(next_reached)
+                    case _:
+                        pass
+            reachable[target] = entry
+
+        changed: bool = True
+        to_check: set[Type] = set(self.targets)
+        while changed:
+            changed = False
+            next_to_check = set()
+            for target in to_check:
+                can_reach = reachable[target]
+                if target in can_reach:
+                    return True
+                newly_reached = set().union(*(reachable[reached] for reached in can_reach))
+                for new_target in newly_reached:
+                    if target == new_target:
+                        return True
+                    elif new_target not in to_check:
+                        changed = True
+                        next_to_check.add(new_target)
+                        can_reach.add(new_target)
+                    elif new_target not in can_reach:
+                        changed = True
+                        can_reach.add(new_target)
+            to_check.update(next_to_check)
+        return False
+
+    def __get__(self, target: Type) -> Enumeration[Tree]:
+        if target in self.enumeration_map:
+            return self.enumeration_map[target]
+        else:
+            return Enumeration.empty()
+
+
+    @staticmethod
+    def combinator_result(r: Combinator) -> Enumeration[Tree]:
+        return Enumeration.singleton(Tree(r, []))
+
+    @staticmethod
+    def apply_result(result: dict[Type, Enumeration[Tree]], r: Apply) -> Enumeration[Tree]:
+        def apf():
+            return (result[r.function_type] * result[r.argument_type]).map(lambda f_arg: Tree(r, [f_arg[0], f_arg[1]])).pay()
+        applied = Enumeration.lazy(apf)
+        return applied
+
+    def __enumeration_map(self) -> dict[Type, Enumeration[Tree]]:
+        result: dict[Type, Enumeration[Tree]] = dict()
+        for (target, rules) in self.grouped_rules.items():
+            _enum: Enumeration[Tree] = Enumeration.empty()
+            for rule in rules:
+                match rule:
+                    case Combinator(_, _) as r:
+                        _enum = _enum + InhabitationResult.combinator_result(r)
+                    case Apply(_, function_type, argument_type) as r:
+                        _enum = _enum + InhabitationResult.apply_result(result, r)
+                    case _:
+                        pass
+            result[target] = _enum
+        return result
+
+    @property
+    def raw(self) -> Enumeration[list[Tree]]:
+        return self._raw.value()
+
+    def __raw(self) -> Enumeration[list[Tree]]:
+        if not self:
+            return Enumeration.empty()
+        result: Enumeration[list[Tree]] = Enumeration.singleton([])
+
+        for target in self.targets:
+            result = (result * self.enumeration_map[target]).map(lambda x: [*x[0], x[1]])
+        return result
+
+    @property
+    def evaluated(self) -> Enumeration[list[object]]:
+        return self._evaluated.value()
+
+    @staticmethod
+    def __evaluated(raw: Enumeration[list[Tree]]) -> Enumeration[list[object]]:
+        return raw.map(lambda l: list(map(lambda t: t.evaluate(), l)))
+
+
+def deep_str(obj) -> str:
+    if isinstance(obj, list):
+        return f"[{','.join(map(deep_str, obj))}]"
+    elif isinstance(obj, dict):
+        return f"map([{','.join(map(lambda kv: ':'.join([deep_str(kv[0]), deep_str(kv[1])]) , obj.items()))}])"
+    elif isinstance(obj, set):
+        return f"set([{','.join(map(deep_str, obj))}])"
+    elif isinstance(obj, tuple):
+        return f"({','.join(map(deep_str, obj))})"
+    elif isinstance(obj, str):
+        return obj
+    elif isinstance(obj, Iterable):
+        return f"iter([{','.join(map(deep_str, obj))}])"
+    else:
+        return str(obj)
 
 
 class FiniteCombinatoryLogic(object):
@@ -64,20 +260,24 @@ class FiniteCombinatoryLogic(object):
         self.repository = repository
         with Pool(processes) as pool:
             self.splitted_repository: dict[object, list[list[MultiArrow]]] = \
-                dict(pool.starmap(_split_repo,
+                dict(pool.starmap(FiniteCombinatoryLogic._split_repo,
                      self.repository.items(),
                      chunksize=max(len(self.repository) // processes, 10)))
         self.subtypes = subtypes
 
     @staticmethod
+    def _split_repo(c: object, ty: Type) -> Tuple[object, list[list[MultiArrow]]]:
+        return c, FiniteCombinatoryLogic.split_ty(ty)
+
+    @staticmethod
     def split_ty(ty: Type) -> list[list[MultiArrow]]:
-        def safe_split(xss: list[list[MultiArrow]]) -> (list[MultiArrow], list[list[MultiArrow]]):
+        def safe_split(xss: list[list[MultiArrow]]) -> Tuple[list[MultiArrow], list[list[MultiArrow]]]:
             return (xss[0] if xss else []), xss[1:]
 
         def split_rec(to_split: Type, srcs: list[Type], delta: list[list[MultiArrow]]) -> list[list[MultiArrow]]:
             match to_split:
                 case Arrow(src, tgt):
-                    (xs, xss) = safe_split(delta)
+                    xs, xss = safe_split(delta)
                     next_srcs = [src, *srcs]
                     return [[(next_srcs, tgt), *xs], *split_rec(tgt, next_srcs, xss)]
                 case Intersection(sigma, tau) if sigma.is_omega:
@@ -97,10 +297,10 @@ class FiniteCombinatoryLogic(object):
         elif self.subtypes.check_subtype(tau, sigma):
             return tau
         else:
-            return Intersection(tau, sigma)
+            return Intersection(sigma, tau)
 
     @staticmethod
-    def _partition_cover(covered: set[Type], to_cover: set[Type]) -> (set[Type], set[Type]):
+    def _partition_cover(covered: set[Type], to_cover: set[Type]) -> Tuple[set[Type], set[Type]]:
         in_covered: set[Type] = set()
         not_in_covered: set[Type] = set()
         for ty in to_cover:
@@ -111,7 +311,7 @@ class FiniteCombinatoryLogic(object):
         return in_covered, not_in_covered
 
     @staticmethod
-    def _still_possible(splits: list[(MultiArrow, set[Type])], to_cover: set[Type]) -> bool:
+    def _still_possible(splits: list[Tuple[MultiArrow, set[Type]]], to_cover: set[Type]) -> bool:
         for ty in to_cover:
             if not filter(lambda covered: ty in covered[1], splits):
                 return False
@@ -120,8 +320,8 @@ class FiniteCombinatoryLogic(object):
     def _merge_multi_arrow(self, arrow1: MultiArrow, arrow2: MultiArrow) -> MultiArrow:
         return list(map(self._dcap, arrow1[0], arrow2[0])), self._dcap(arrow1[1], arrow2[1])
 
-    def _check_cover(self, splits: list[(MultiArrow, set[Type])], to_cover: set[Type]) -> CoverMachineInstruction:
-        def instr(state: list[MultiArrow]) -> (State, list[CoverMachineInstruction]):
+    def _check_cover(self, splits: list[Tuple[MultiArrow, set[Type]]], to_cover: set[Type]) -> CoverMachineInstruction:
+        def instr(state: list[MultiArrow]) -> Tuple[State, list[CoverMachineInstruction]]:
             if FiniteCombinatoryLogic._still_possible(splits, to_cover):
                 return state, [self._cover(splits, to_cover)]
             else:
@@ -129,10 +329,10 @@ class FiniteCombinatoryLogic(object):
 
         return instr
 
-    def _check_continue_cover(self, splits: list[(MultiArrow, set[Type])],
+    def _check_continue_cover(self, splits: list[Tuple[MultiArrow, set[Type]]],
                               to_cover: set[Type],
                               current_result: MultiArrow) -> CoverMachineInstruction:
-        def instr(state: list[MultiArrow]) -> (State, list[CoverMachineInstruction]):
+        def instr(state: list[MultiArrow]) -> Tuple[State, list[CoverMachineInstruction]]:
             if FiniteCombinatoryLogic._still_possible(splits, to_cover):
                 return state, [self._continue_cover(splits, to_cover, current_result)]
             else:
@@ -140,10 +340,10 @@ class FiniteCombinatoryLogic(object):
 
         return instr
 
-    def _continue_cover(self, splits: list[(MultiArrow, set[Type])],
+    def _continue_cover(self, splits: list[Tuple[MultiArrow, set[Type]]],
                         to_cover: set[Type],
                         current_result: MultiArrow) -> CoverMachineInstruction:
-        def instr(state: list[MultiArrow]) -> (State, list[CoverMachineInstruction]):
+        def instr(state: list[MultiArrow]) -> Tuple[State, list[CoverMachineInstruction]]:
             if not splits:
                 return state, []
             m, covered = splits[0]
@@ -162,8 +362,8 @@ class FiniteCombinatoryLogic(object):
 
         return instr
 
-    def _cover(self, splits: list[(MultiArrow, set[Type])], to_cover: set[Type]) -> CoverMachineInstruction:
-        def instr(state: list[MultiArrow]) -> (State, list[CoverMachineInstruction]):
+    def _cover(self, splits: list[Tuple[MultiArrow, set[Type]]], to_cover: set[Type]) -> CoverMachineInstruction:
+        def instr(state: list[MultiArrow]) -> Tuple[State, list[CoverMachineInstruction]]:
             if not splits:
                 return state, []
             m, covered = splits[0]
@@ -181,10 +381,16 @@ class FiniteCombinatoryLogic(object):
 
     @staticmethod
     def _cover_machine(state: State, program: list[CoverMachineInstruction]) -> State:
-        instructions: Iterator[CoverMachineInstruction] = iter(program)
-        while instruction := next(instructions, None):
-            state, next_instructions = instruction(state)
-            instructions = chain(iter(next_instructions), instructions)
+        instructions: deque[Iterator[CoverMachineInstruction]] = deque([iter(program)])
+        while instructions:
+            head = instructions.popleft()
+            try:
+                instruction = next(head)
+                instructions.appendleft(head)
+                state, next_instructions = instruction(state)
+                instructions.appendleft(iter(next_instructions))
+            except StopIteration:
+                pass
         return state
 
     def _reduce_multi_arrows(self, ms: list[MultiArrow]) -> list[MultiArrow]:
@@ -206,7 +412,7 @@ class FiniteCombinatoryLogic(object):
                 result = [multi_arrow, *(in_result for in_result in result if not check(in_result, multi_arrow))]
         return result
 
-    def _compute_fail_existing(self, rules: set[Rule], target: Type) -> (bool, bool):
+    def _compute_fail_existing(self, rules: set[Rule], target: Type) -> Tuple[bool, bool]:
         rest_of_rules: Iterator[Rule] = iter(rules)
         while to_check := next(rest_of_rules, None):
             match to_check:
@@ -258,7 +464,7 @@ class FiniteCombinatoryLogic(object):
             FiniteCombinatoryLogic._commit_updates(target, combinator, self._reduce_multi_arrows(covers))
         return list(next_rules), not covers
 
-    def _inhabit_cover(self, target: Type) -> (bool, Iterator[Rule]):
+    def _inhabit_cover(self, target: Type) -> Tuple[bool, Iterator[Rule]]:
         prime_factors: set[Type] = self.subtypes.minimize(target.organized)
         with Pool(self.processes) as pool:
             results =\
@@ -312,9 +518,11 @@ class FiniteCombinatoryLogic(object):
         while target := next(targets, None):
             targets = self._inhabitation_step(stable, target, targets)
 
-    def inhabit(self, *targets: Type) -> set[Rule]:
+    def inhabit(self, *targets: Type) -> InhabitationResult:
         result: set[Rule] = set()
-        for target in targets:
+        all_targets = list(targets)
+        _targets = iter(all_targets)
+        for target in _targets:
             if target.is_omega:
                 result |= self._omega_rules(target)
             else:
@@ -328,7 +536,7 @@ class FiniteCombinatoryLogic(object):
                         result.add(Failed(target))
                     else:
                         self._inhabitation_machine(result, targets)
-        return FiniteCombinatoryLogic._prune(result)
+        return InhabitationResult(targets=all_targets, rules=FiniteCombinatoryLogic._prune(result))
 
     @staticmethod
     def _ground_types_of(rules: set[Rule]) -> set[Type]:
@@ -362,14 +570,46 @@ class FiniteCombinatoryLogic(object):
                     result.add(rule)
         return result
 
+import cProfile
+
 if __name__ == "__main__":
-    repo = {"id": Intersection(Arrow(Constructor("Int"), Constructor("Int")),
+
+    def id(x):
+        return x
+    x = 42
+
+    def loopOk(y):
+        return y+1
+
+    repo = {id: Intersection(Arrow(Constructor("Int"), Constructor("Int")),
                                Arrow(Constructor("Foo"), Intersection(Constructor("Bar"), Constructor("Baz")))),
-            "x": Intersection(Constructor("Int"), Constructor("Foo2")),
+            x: Intersection(Constructor("Int"), Constructor("Foo2")),
             "pruned": Arrow(Constructor("Impossible"), Intersection(Constructor("Int"), Constructor("Foo"))),
-            "loop" : Arrow(Constructor("Impossible"), Constructor("Impossible"))
+            "loop" : Arrow(Constructor("Impossible"), Constructor("Impossible")),
+            loopOk : Intersection(Arrow(Constructor("Int"), Constructor("Int")),
+                                    Arrow(Intersection(Constructor("Baz"), Constructor("Bar")), Intersection(Constructor("Bar"), Constructor("Baz"))))
+            #"l" : Constructor("List", Constructor("Int")) # List[Int]
+            #"f" : Arrow(Constructor("Int"), Arrow(Constructor("Int"), Constructor("String"))) # def f(x: Int) -> (Int -> String)
             }
-    inhab = FiniteCombinatoryLogic(repo, Subtypes({"Foo2": {"Foo"}}))
-    result = inhab.inhabit(Intersection(Constructor("Int"), Constructor("Baz")))
-    for rule in result:
-        print(rule)
+    inhab = FiniteCombinatoryLogic(repo, Subtypes({"Foo2": {"Foo"}, "X": {"Int"}}))
+    result = inhab.inhabit(Intersection(Constructor("Int"), Constructor("Baz")), Intersection(Constructor("Int"), Constructor("Foo2")))
+    print(f"rules: {deep_str(result.grouped_rules)}")
+    print(f"empty: {not result} infinite: {result.infinite}")
+    num = 1000
+    res = iter(result.raw)
+    #for i in range(num):
+    #    next(res)
+    #print(len(next(res)))
+    print("ok")
+    cProfile.run('print(f"result {num}: {deep_str(result.evaluated[num])}")')
+
+    #print(f"result {num}: {deep_str(result.evaluated[num])}")
+    #print(f"result {num+1}: {deep_str(result.raw[num+1])}")
+    #print(f"result {num+2}: {deep_str(result.raw[num+2])}")')
+    # for enum in result.evaluated:
+    #     for trees in enum:
+    #         print(deep_str(trees))
+    #         input("Press enter for next")
+
+
+

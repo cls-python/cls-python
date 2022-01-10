@@ -6,8 +6,8 @@ class Subtypes(object):
     def __init__(self, environment: dict[object, set]):
         self.environment = self._transitive_closure(self._reflexive_closure(environment))
 
-    def _tgt_for_srcs(self, gte: Type, inseq: Sequence[(Type, Type)]) -> Iterator[Type]:
-        for (src, tgt) in inseq:
+    def _tgt_for_srcs(self, gte: Type, inseq: Sequence[Tuple[Type, Type]]) -> Iterator[Type]:
+        for src, tgt in inseq:
             if self.check_subtype(gte, src):
                 yield tgt
 
@@ -43,8 +43,7 @@ class Subtypes(object):
                 def cast_rec(other, delta):
                     match other:
                         case Arrow(osrc, otgt):
-                            delta.insert(0, (osrc, otgt))
-                            return delta
+                            return [(osrc, otgt), *delta]
                         case Intersection(l, r):
                             return cast_rec(l, cast_rec(r, delta))
                         case _:
@@ -54,9 +53,9 @@ class Subtypes(object):
             case Constructor(name, _):
                 def cast_rec(other, delta):
                     match other:
-                        case Constructor(oname, orag):
+                        case Constructor(oname, oarg):
                             if name in self.environment.get(oname, {oname}):
-                                delta.insert(0, orag)
+                                return [oarg, *delta]
                             return delta
                         case Intersection(l, r):
                             return cast_rec(l, cast_rec(r, delta))
@@ -68,8 +67,7 @@ class Subtypes(object):
                 def cast_rec(other, delta):
                     match other:
                         case Product(oleft, oright):
-                            delta.insert(0, (oleft, oright))
-                            return delta
+                            return [(oleft, oright), *delta]
                         case Intersection(l, r):
                             return cast_rec(l, cast_rec(r, delta))
                         case _:

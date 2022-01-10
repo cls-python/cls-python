@@ -78,7 +78,7 @@ class Omega(Type):
 
     def __post_init__(self):
         super().__init__(
-            is_omega=self._is_omega(),
+            is_omega=True,
             size=self._size(),
             organized=self._organized(),
             path=self._path())
