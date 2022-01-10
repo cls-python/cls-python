@@ -10,12 +10,12 @@ from abc import ABC, abstractmethod
 from itertools import chain
 from functools import partial, cached_property
 
-from enumeration import Lazy
-from enumeration2 import Enumeration, ComputationStep, EmptyStep
+from enumeration import Enumeration, ComputationStep, EmptyStep
 from itypes import *
 from subtypes import Subtypes
 
 import cProfile
+
 
 MultiArrow: TypeAlias = Tuple[list[Type], Type]
 State: TypeAlias = list['MultiArrow']
@@ -35,6 +35,7 @@ class Failed(Rule):
 
     def __str__(self):
         return f"Failed({str(self.target)})"
+
 
 @dataclass(frozen=True)
 class Combinator(Rule):
@@ -89,30 +90,14 @@ class Tree(object):
             case Apply(_, _, _): return f"{str(self.children[0])}({str(self.children[1])})"
             case _: return f"{str(self.rule)} @ {deep_str(self.children)}"
 
+
 @dataclass(frozen=True)
 class InhabitationResult(object):
     targets: list[Type] = field(init=True)
     rules: set[Rule] = field(init=True)
-    _grouped_rules: Lazy[dict[Type, set[Rule]]] = field(init=False, repr=False, compare=False, hash=False)
-    _non_empty: Lazy[bool] = field(init=False, repr=False, compare=False, hash=False)
-    _infinite: Lazy[bool] = field(init=False, repr=False, compare=False, hash=False)
-    enumeration_map: dict[Type, Enumeration[Tree]] = field(init=False, repr=False, compare=False, hash=False)
-    _raw: Lazy[Enumeration[list[Tree]]] = field(init=False, repr=False, compare=False, hash=False)
-    _evaluated: Lazy[Enumeration[list[object]]] = field(init=False, repr=False, compare=False, hash=False)
 
-    def __post_init__(self):
-        object.__setattr__(self, "_grouped_rules", Lazy.once(self.__grouped_rules))
-        object.__setattr__(self, "_non_empty", Lazy.once(self.__non_empty))
-        object.__setattr__(self, "_infinite", Lazy.once(self.__infinite))
-        object.__setattr__(self, "enumeration_map", self.__enumeration_map())
-        object.__setattr__(self, "_raw", Lazy.once(self.__raw))
-        object.__setattr__(self, "_evaluated", self._raw.map(self.__evaluated))
-
-    @property
+    @cached_property
     def grouped_rules(self) -> dict[Type, set[Rule]]:
-        return self._grouped_rules.value()
-
-    def __grouped_rules(self) -> dict[Type, set[Rule]]:
         result: dict[Type, set[Rule]] = dict()
         for rule in self.rules:
             group: set[Rule] = result.get(rule.target)
@@ -128,20 +113,18 @@ class InhabitationResult(object):
                 return True
         return False
 
-    def __non_empty(self):
+    @cached_property
+    def non_empty(self) -> bool:
         for target in self.targets:
             if self.check_empty(target):
                 return False
         return True
 
     def __bool__(self) -> bool:
-        return self._non_empty.value()
+        return self.non_empty
 
-    @property
+    @cached_property
     def infinite(self) -> bool:
-        return self._infinite.value()
-
-    def __infinite(self) -> bool:
         if not self:
             return False
 
@@ -186,7 +169,6 @@ class InhabitationResult(object):
         else:
             return Enumeration.empty()
 
-
     @staticmethod
     def combinator_result(r: Combinator) -> Enumeration[Tree]:
         return Enumeration.singleton(Tree(r, []))
@@ -194,11 +176,13 @@ class InhabitationResult(object):
     @staticmethod
     def apply_result(result: dict[Type, Enumeration[Tree]], r: Apply) -> Enumeration[Tree]:
         def apf():
-            return (result[r.function_type] * result[r.argument_type]).map(lambda f_arg: Tree(r, [f_arg[0], f_arg[1]])).pay()
+            return (result[r.function_type] * result[r.argument_type]) \
+                    .map(lambda f_arg: Tree(r, [f_arg[0], f_arg[1]])).pay()
         applied = Enumeration.lazy(apf)
         return applied
 
-    def __enumeration_map(self) -> dict[Type, Enumeration[Tree]]:
+    @cached_property
+    def enumeration_map(self) -> dict[Type, Enumeration[Tree]]:
         result: dict[Type, Enumeration[Tree]] = dict()
         for (target, rules) in self.grouped_rules.items():
             _enum: Enumeration[Tree] = Enumeration.empty()
@@ -206,18 +190,15 @@ class InhabitationResult(object):
                 match rule:
                     case Combinator(_, _) as r:
                         _enum = _enum + InhabitationResult.combinator_result(r)
-                    case Apply(_, function_type, argument_type) as r:
+                    case Apply(_, _, _) as r:
                         _enum = _enum + InhabitationResult.apply_result(result, r)
                     case _:
                         pass
             result[target] = _enum
         return result
 
-    @property
+    @cached_property
     def raw(self) -> Enumeration[list[Tree]]:
-        return self._raw.value()
-
-    def __raw(self) -> Enumeration[list[Tree]]:
         if not self:
             return Enumeration.empty()
         result: Enumeration[list[Tree]] = Enumeration.singleton([])
@@ -226,13 +207,9 @@ class InhabitationResult(object):
             result = (result * self.enumeration_map[target]).map(lambda x: [*x[0], x[1]])
         return result
 
-    @property
-    def evaluated(self) -> Enumeration[list[object]]:
-        return self._evaluated.value()
-
-    @staticmethod
-    def __evaluated(raw: Enumeration[list[Tree]]) -> Enumeration[list[object]]:
-        return raw.map(lambda l: list(map(lambda t: t.evaluate(), l)))
+    @cached_property
+    def evaluated(self) -> Enumeration[list[Any]]:
+        return self.raw.map(lambda l: list(map(lambda t: t.evaluate(), l)))
 
 
 def deep_str(obj) -> str:
@@ -504,8 +481,8 @@ class FiniteCombinatoryLogic(object):
                     stable.add(target)
                     return targets
                 else:
-                    inhabitFailed, nextTargets = self._inhabit_cover(target_type)
-                    if inhabitFailed:
+                    inhabit_failed, nextTargets = self._inhabit_cover(target_type)
+                    if inhabit_failed:
                         stable.add(Failed(target_type))
                         return self.drop_targets(targets)
                     else:
@@ -550,7 +527,7 @@ class FiniteCombinatoryLogic(object):
                 match rule:
                     case Apply(target, function_type, argument_type) if (function_type in ground
                                                                          and argument_type in ground
-                                                                         and not target in ground):
+                                                                         and target not in ground):
                         next_ground.add(target)
                     case _: pass
         return ground
@@ -561,7 +538,7 @@ class FiniteCombinatoryLogic(object):
         result = set()
         for rule in rules:
             match rule:
-                case Apply(target, _, _) if not target in ground_types:
+                case Apply(target, _, _) if target not in ground_types:
                     result.add(Failed(target))
                 case Apply(_, function_type, argument_type) if not (function_type in ground_types
                                                                     and argument_type in ground_types):
@@ -570,7 +547,6 @@ class FiniteCombinatoryLogic(object):
                     result.add(rule)
         return result
 
-import cProfile
 
 if __name__ == "__main__":
 
@@ -585,8 +561,8 @@ if __name__ == "__main__":
                                Arrow(Constructor("Foo"), Intersection(Constructor("Bar"), Constructor("Baz")))),
             x: Intersection(Constructor("Int"), Constructor("Foo2")),
             "pruned": Arrow(Constructor("Impossible"), Intersection(Constructor("Int"), Constructor("Foo"))),
-            "loop" : Arrow(Constructor("Impossible"), Constructor("Impossible")),
-            loopOk : Intersection(Arrow(Constructor("Int"), Constructor("Int")),
+            "loop": Arrow(Constructor("Impossible"), Constructor("Impossible")),
+            loopOk: Intersection(Arrow(Constructor("Int"), Constructor("Int")),
                                     Arrow(Intersection(Constructor("Baz"), Constructor("Bar")), Intersection(Constructor("Bar"), Constructor("Baz"))))
             #"l" : Constructor("List", Constructor("Int")) # List[Int]
             #"f" : Arrow(Constructor("Int"), Arrow(Constructor("Int"), Constructor("String"))) # def f(x: Int) -> (Int -> String)
@@ -595,13 +571,17 @@ if __name__ == "__main__":
     result = inhab.inhabit(Intersection(Constructor("Int"), Constructor("Baz")), Intersection(Constructor("Int"), Constructor("Foo2")))
     print(f"rules: {deep_str(result.grouped_rules)}")
     print(f"empty: {not result} infinite: {result.infinite}")
-    num = 1000
+    num = 10000
     res = iter(result.raw)
     #for i in range(num):
     #    next(res)
     #print(len(next(res)))
     print("ok")
-    cProfile.run('print(f"result {num}: {deep_str(result.evaluated[num])}")')
+
+    
+    cProfile.run('r_num = result.raw[num]')
+    print(r_num[0].rule)
+    #cProfile.run('print(f"result {num}: {deep_str(result.evaluated[num])}")')
 
     #print(f"result {num}: {deep_str(result.evaluated[num])}")
     #print(f"result {num+1}: {deep_str(result.raw[num+1])}")
