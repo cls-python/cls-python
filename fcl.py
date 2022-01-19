@@ -163,6 +163,16 @@ class InhabitationResult(object):
             to_check.update(next_to_check)
         return False
 
+    def size(self) -> int:
+        if self.infinite:
+            return -1
+        maximum = self.raw.unsafe_max_size()
+        size = 0
+        values = self.raw.all_values()
+        for i in range(0, maximum+1):
+            size += len(next(values))
+        return size
+
     def __get__(self, target: Type) -> Enumeration[Tree]:
         if target in self.enumeration_map:
             return self.enumeration_map[target]
@@ -198,19 +208,23 @@ class InhabitationResult(object):
         return result
 
     @cached_property
-    def raw(self) -> Enumeration[list[Tree]]:
+    def raw(self) -> Enumeration[Tree | list[Tree]]:
         if not self:
             return Enumeration.empty()
-        result: Enumeration[list[Tree]] = Enumeration.singleton([])
-
-        for target in self.targets:
-            result = (result * self.enumeration_map[target]).map(lambda x: [*x[0], x[1]])
-        return result
+        if len(self.targets) == 1:
+            return self.enumeration_map[self.targets[0]]
+        else:
+            result: Enumeration[list[Tree]] = Enumeration.singleton([])
+            for target in self.targets:
+                result = (result * self.enumeration_map[target]).map(lambda x: [*x[0], x[1]])
+            return result
 
     @cached_property
-    def evaluated(self) -> Enumeration[list[Any]]:
-        return self.raw.map(lambda l: list(map(lambda t: t.evaluate(), l)))
-
+    def evaluated(self) -> Enumeration[Any | list[Any]]:
+        if len(self.targets) == 1:
+            return self.raw.map(lambda t: t.evaluate())
+        else:
+            return self.raw.map(lambda l: list(map(lambda t: t.evaluate(), l)))
 
 def deep_str(obj) -> str:
     if isinstance(obj, list):
@@ -571,7 +585,9 @@ if __name__ == "__main__":
     result = inhab.inhabit(Intersection(Constructor("Int"), Constructor("Baz")), Intersection(Constructor("Int"), Constructor("Foo2")))
     print(f"rules: {deep_str(result.grouped_rules)}")
     print(f"empty: {not result} infinite: {result.infinite}")
-    num = 10000
+
+
+    num = 0
     res = iter(result.raw)
     #for i in range(num):
     #    next(res)
@@ -582,6 +598,9 @@ if __name__ == "__main__":
     cProfile.run('r_num = result.raw[num]')
     print(r_num[0].rule)
     #cProfile.run('print(f"result {num}: {deep_str(result.evaluated[num])}")')
+
+    #print(result.raw.unsafe_max_size())
+    print(result.size())
 
     #print(f"result {num}: {deep_str(result.evaluated[num])}")
     #print(f"result {num+1}: {deep_str(result.raw[num+1])}")
