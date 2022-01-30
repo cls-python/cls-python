@@ -61,7 +61,7 @@ class Apply(Rule):
 @dataclass(frozen=True)
 class Tree(object):
     rule: Rule = field(init=True)
-    children: list['Tree'] = field(init=True, default_factory=lambda: [])
+    children: Tuple['Tree', ...] = field(init=True, default_factory=lambda: ())
 
     class Evaluator(ComputationStep):
         def __init__(self, outer: 'Tree', results: list[Any]):
@@ -170,7 +170,8 @@ class InhabitationResult(object):
         size = 0
         values = self.raw.all_values()
         for i in range(0, maximum+1):
-            size += len(next(values))
+            trees = next(values)
+            size += len(trees)
         return size
 
     def __get__(self, target: Type) -> Enumeration[Tree]:
@@ -181,13 +182,16 @@ class InhabitationResult(object):
 
     @staticmethod
     def combinator_result(r: Combinator) -> Enumeration[Tree]:
-        return Enumeration.singleton(Tree(r, []))
+        return Enumeration.singleton(Tree(r, ()))
 
     @staticmethod
     def apply_result(result: dict[Type, Enumeration[Tree]], r: Apply) -> Enumeration[Tree]:
+        def mkapp(left_and_right):
+            return Tree(r, (left_and_right[0], left_and_right[1]))
+
         def apf():
             return (result[r.function_type] * result[r.argument_type]) \
-                    .map(lambda f_arg: Tree(r, [f_arg[0], f_arg[1]])).pay()
+                    .map(mkapp).pay()
         applied = Enumeration.lazy(apf)
         return applied
 

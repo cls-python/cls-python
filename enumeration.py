@@ -162,10 +162,10 @@ class FiniteEmpty(Finite[NoReturn]):
         return EmptyStep()
 
     def _mul_opt(self, other: 'Finite[C]') -> 'Finite[Tuple[C, A]]':
-        return other
+        return self
 
     def __mul__(self, other):
-        return other
+        return self
 
     def _add_opt(self, other: 'Finite[C]') -> 'Finite[Union[C, A]]':
         return other
@@ -197,10 +197,14 @@ class FiniteSingleton(Finite[A]):
         return EmptyStep()
 
     def _mul_opt(self, other: 'Finite[C]') -> 'Finite[Tuple[C, A]]':
-        return other.map(lambda _x: (_x, self.value))
+        def g(_x):
+            return (_x, self.value)
+        return other.map(g)
 
     def __mul__(self, other):
-        return other.map(lambda _x: (self.value, _x))
+        def g(_x):
+            return (self.value, _x)
+        return other.map(g)
 
     def map(self, f: Callable[[A], C]) -> 'Finite[C]':
         return FiniteSingleton(f(self.value))
@@ -466,7 +470,9 @@ class FiniteMap(Finite[A], Generic[C, A]):
         return self.LocalClearCacheComputation(self)
 
     def map(self, f: Callable[[A], C]) -> 'Finite[C]':
-        return FiniteMap(self.over, lambda x: f(self.f))
+        def g(x):
+            return f(self.f(x))
+        return FiniteMap(self.over, g)
 
 
 class Enumeration(Iterable[A], ABC):
@@ -510,7 +516,7 @@ class Enumeration(Iterable[A], ABC):
         return other._add_opt(self)
 
     def _mul_opt(self, other: 'Enumeration[C]') -> 'Enumeration[Tuple[C, A]]':
-        return EnumerationProduct(self, other)
+        return EnumerationProduct(other, self)
 
     def __mul__(self, other: 'Enumeration[C]') -> 'Enumeration[Tuple[A, C]]':
         return other._mul_opt(self)
@@ -640,7 +646,7 @@ class EnumerationEmpty(Enumeration[NoReturn]):
         return other
 
     def _mul_opt(self, other: 'Enumeration[C]') -> 'Enumeration[Tuple[C, A]]':
-        return other
+        return self
 
     def __mul__(self, other):
         return self
@@ -839,7 +845,7 @@ class EnumerationProduct(Enumeration[Tuple[A, B]], Generic[A, B]):
         def __iter__(self):
             yield self.outer.left.cached_max_size_computation()
             yield self.outer.right.cached_max_size_computation()
-            self.outer.max_size = max(self.outer.left.unsafe_max_size(), self.outer.right.unsafe_max_size())
+            self.outer.max_size = self.outer.left.unsafe_max_size() + self.outer.right.unsafe_max_size()
             yield EmptyStep()
 
     def max_size_computation(self) -> ComputationStep:
@@ -1031,7 +1037,9 @@ class EnumerationMap(Enumeration[A], Generic[C, A]):
         return self.LocalClearCacheComputation(self)
 
     def map(self, f: Callable[[A], C]) -> 'Enumeration[C]':
-        return EnumerationMap(self.over, lambda x: f(self.f(x)))
+        def g(x):
+            return f(self.f(x))
+        return EnumerationMap(self.over, g)
 
     class MaxSizeComputation(ComputationStep):
         def __init__(self, outer: 'EnumerationMap[C, A]'):
