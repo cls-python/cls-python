@@ -202,6 +202,11 @@ class RepoMeta(Register):
         # Update repository
         cls_params = [(name, param) for name, param in cls.get_params() if isinstance(param, ClsParameter)]
         index_set = RepoMeta._index_set(cls_tpe, cls_params)
+        if not cls.config_domain is None:
+            if not index_set:
+                index_set = cls.config_domain
+            else:
+                index_set.intersection_update(cls.config_domain)
         combinator = RepoMeta.WrappedTask(cls, bool(index_set), tuple(cls_params), ())
         tpe = RepoMeta._combinator_tpe(cls, index_set, cls_params)
         if not cls.abstract:
@@ -373,6 +378,7 @@ class CLSLuigiDecoder(cls_json.CLSDecoder):
 
 class LuigiCombinator(Generic[ConfigIndex], metaclass=RepoMeta):
     config_index = luigi.OptionalParameter(positional=False, default="")
+    config_domain: set[ConfigIndex] | None = None
     abstract: bool = False
 
     @classmethod
