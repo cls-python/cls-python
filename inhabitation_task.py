@@ -19,14 +19,13 @@ from multiprocessing import Process
 
 @dataclass
 class TaskState(object):
-    worker_scheduler_factory: luigi.interface._WorkerSchedulerFactory = field(init=True)
-
     fcl: FiniteCombinatoryLogic = field(init=True)
     target: Type = field(init=True)
     result: InhabitationResult | None = field(init=False, default=None)
     position: int = field(init=False, default=-1)
     stopped: bool = field(init=False, default=False)
     processes: list[Process] = field(init=False, default_factory=lambda: [])
+    worker_scheduler_factory: luigi.interface._WorkerSchedulerFactory = field(init=True, default_factory=luigi.interface._WorkerSchedulerFactory)
 
 
 states: dict[str, TaskState] = dict()
@@ -203,6 +202,11 @@ class RepoMeta(Register):
         # Update repository
         cls_params = [(name, param) for name, param in cls.get_params() if isinstance(param, ClsParameter)]
         index_set = RepoMeta._index_set(cls_tpe, cls_params)
+        if not cls.config_domain is None:
+            if not index_set:
+                index_set = cls.config_domain
+            else:
+                index_set.intersection_update(cls.config_domain)
         combinator = RepoMeta.WrappedTask(cls, bool(index_set), tuple(cls_params), ())
         tpe = RepoMeta._combinator_tpe(cls, index_set, cls_params)
         if not cls.abstract:
@@ -374,6 +378,7 @@ class CLSLuigiDecoder(cls_json.CLSDecoder):
 
 class LuigiCombinator(Generic[ConfigIndex], metaclass=RepoMeta):
     config_index = luigi.OptionalParameter(positional=False, default="")
+    config_domain: set[ConfigIndex] | None = None
     abstract: bool = False
 
     @classmethod
@@ -525,12 +530,12 @@ if __name__ == '__main__':
     #target = Constructor("Test")
     #repository = {InhabitationTest(id=0): target, InhabitationTest(id=1): target}
     #fcl = FiniteCombinatoryLogic(repository, Subtypes(dict()))
-    target = ABlubb.return_type(1)
+    target = Bar.return_type("1")
     repository = RepoMeta.repository
     print(deep_str(repository))
     fcl = FiniteCombinatoryLogic(repository, Subtypes(RepoMeta.subtypes))
     task = InhabitationTask()
-    states[task.task_id] = TaskState(worker_scheduler_factory, fcl, target)
+    states[task.task_id] = TaskState(fcl, target, worker_scheduler_factory=worker_scheduler_factory)
     luigi.build([task], worker_scheduler_factory=states[task.task_id].worker_scheduler_factory)
 
 
