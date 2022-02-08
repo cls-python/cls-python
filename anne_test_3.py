@@ -5,33 +5,47 @@ from fcl import FiniteCombinatoryLogic, Subtypes
 import time
 
 
-class ReadDataTask(luigi.Task, inhabitation_task.LuigiCombinator):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.done = False
+class WriteFileTask(luigi.Task, inhabitation_task.LuigiCombinator):
 
     def output(self):
-        print("ReadDataTask: output")
         return luigi.LocalTarget('pure_hello_world.txt')
 
     def run(self):
-        print("====== ReadData: run")
+        print("====== WriteFileTask: run")
         with self.output().open('w') as f:
             f.write("Hello World")
 
 
+class SubstituteWeltTask(luigi.Task, inhabitation_task.LuigiCombinator):
+    write_file_task = inhabitation_task.ClsParameter(tpe=WriteFileTask.return_type())
+
+    def requires(self):
+        return self.write_file_task()
+
+    def output(self):
+        return luigi.LocalTarget('pure_hello_welt.txt')
+
+    def run(self):
+        print("============= NameSubstituterTask: run")
+        with self.input().open() as infile:
+            text = infile.read()
+
+        with self.output().open('w') as outfile:
+            text = text.replace('World', "Welt")
+            outfile.write(text)
+
+
+
 class SubstituteNameTask(luigi.Task, inhabitation_task.LuigiCombinator):
     abstract = True
-    pass
+    write_file_task = inhabitation_task.ClsParameter(tpe=WriteFileTask.return_type())
+
+    def requires(self):
+        return self.write_file_task()
 
 
 class SubstituteNameByAnneTask(SubstituteNameTask):
     abstract = False
-    read_data_task = inhabitation_task.ClsParameter(tpe=ReadDataTask.return_type())
-
-    def requires(self):
-        return self.read_data_task()
 
     def output(self):
         return luigi.LocalTarget('pure_hello_anne.txt')
@@ -44,15 +58,10 @@ class SubstituteNameByAnneTask(SubstituteNameTask):
         with self.output().open('w') as outfile:
             text = text.replace('World', "Anne")
             outfile.write(text)
-        time.sleep(3)
 
 
-class SubstituteNameByJanTask(SubstituteNameTask):
+class SubstituteNameByJanTask(luigi.Task, inhabitation_task.LuigiCombinator):
     abstract = False
-    read_data_task = inhabitation_task.ClsParameter(tpe=ReadDataTask.return_type())
-
-    def requires(self):
-        return self.read_data_task()
 
     def output(self):
         return luigi.LocalTarget('pure_hello_jan.txt')
@@ -65,18 +74,96 @@ class SubstituteNameByJanTask(SubstituteNameTask):
         with self.output().open('w') as outfile:
             text = text.replace('World', "Jan")
             outfile.write(text)
-        time.sleep(3)
 
 
-class FinalTask(luigi.Task, inhabitation_task.LuigiCombinator):
-    substitute_name = inhabitation_task.ClsParameter(tpe=SubstituteNameTask.return_type())
+class SubstituteNameByAnneTask2(luigi.Task, inhabitation_task.LuigiCombinator):
+    write_file_task = inhabitation_task.ClsParameter(tpe=WriteFileTask.return_type())
+
+    def requires(self):
+        return self.write_file_task()
+
+    def output(self):
+        return luigi.LocalTarget('pure_hello_anne2.txt')
+
+    def run(self):
+        print("============= NameSubstituter: run")
+        with self.input().open() as infile:
+            text = infile.read()
+
+        with self.output().open('w') as outfile:
+            text = text.replace('World', "Anne2")
+            outfile.write(text)
+
+
+class SubstituteNameByJanTask2(luigi.Task, inhabitation_task.LuigiCombinator):
+    write_file_task = inhabitation_task.ClsParameter(tpe=WriteFileTask.return_type())
+
+    def requires(self):
+        return self.write_file_task()
+
+    def output(self):
+        return luigi.LocalTarget('pure_hello_jan2.txt')
+
+    def run(self):
+        print("============= NameSubstituter: run")
+        with self.input().open() as infile:
+            text = infile.read()
+
+        with self.output().open('w') as outfile:
+            text = text.replace('World', "Jan2")
+            outfile.write(text)
+
+
+class SubstituteNameByParameterTask(luigi.Task, inhabitation_task.LuigiCombinator):
+    write_file_task = inhabitation_task.ClsParameter(tpe=WriteFileTask.return_type())
+    name = luigi.Parameter()
+
+    def requires(self):
+        return self.write_file_task()
+
+    def output(self):
+        return luigi.LocalTarget('pure_hello_{}.txt'.format(self.name))
+
+    def run(self):
+        print("============= NameSubstituter: run")
+        with self.input().open() as infile:
+            text = infile.read()
+
+        with self.output().open('w') as outfile:
+            text = text.replace('World', self.name)
+            outfile.write(text)
+
+
+class SubstituteNameConfigTask(luigi.Task, inhabitation_task.LuigiCombinator):
+    x = inhabitation_task.ClsParameter(tpe={1: SubstituteNameByJanTask2.return_type(),
+                                            2: SubstituteNameByAnneTask2.return_type()})
+    config_domain = {1, 2}
+    config_index = luigi.IntParameter()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.done = False
 
     def requires(self):
-        return [self.substitute_name()]
+        return self.x()
+
+    def complete(self):
+        return self.done
+
+    def run(self):
+        print(self.config_index)
+        self.done = True
+
+
+class FinalTask(luigi.Task, inhabitation_task.LuigiCombinator):
+    substitute_name = inhabitation_task.ClsParameter(tpe=SubstituteNameByParameterTask.return_type())
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.done = False
+
+    def requires(self):
+        return [self.substitute_name("uiui")]
 
     def complete(self):
         return self.done
