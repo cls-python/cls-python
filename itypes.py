@@ -125,7 +125,7 @@ class Constructor(Type):
         return ([], self) if self.arg.path or self.arg == Omega() else None
 
     def _organized(self) -> set['Type']:
-        return {self} if self._path else set(map(lambda ap: Constructor(self.name, ap), self.arg.organized))
+        return {self} if self._path() else set(map(lambda ap: Constructor(self.name, ap), self.arg.organized))
 
     def _str_prec(self, prec: int) -> str:
         if self.arg == Omega():

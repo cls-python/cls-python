@@ -566,45 +566,49 @@ class FiniteCombinatoryLogic(object):
         return result
 
 
+class Left(object):
+    def __call__(self, x):
+        return f"{x} then go left"
+
 if __name__ == "__main__":
 
-    def id(x):
-        return x
-    x = 42
-
-    def loopOk(y):
-        return y+1
-
-    repo = {id: Intersection(Arrow(Constructor("Int"), Constructor("Int")),
-                               Arrow(Constructor("Foo"), Intersection(Constructor("Bar"), Constructor("Baz")))),
-            x: Intersection(Constructor("Int"), Constructor("Foo2")),
-            "pruned": Arrow(Constructor("Impossible"), Intersection(Constructor("Int"), Constructor("Foo"))),
-            "loop": Arrow(Constructor("Impossible"), Constructor("Impossible")),
-            loopOk: Intersection(Arrow(Constructor("Int"), Constructor("Int")),
-                                    Arrow(Intersection(Constructor("Baz"), Constructor("Bar")), Intersection(Constructor("Bar"), Constructor("Baz"))))
-            #"l" : Constructor("List", Constructor("Int")) # List[Int]
-            #"f" : Arrow(Constructor("Int"), Arrow(Constructor("Int"), Constructor("String"))) # def f(x: Int) -> (Int -> String)
-            }
-    inhab = FiniteCombinatoryLogic(repo, Subtypes({"Foo2": {"Foo"}, "X": {"Int"}}))
-    result = inhab.inhabit(Intersection(Constructor("Int"), Constructor("Baz")), Intersection(Constructor("Int"), Constructor("Foo2")))
-    print(f"rules: {deep_str(result.grouped_rules)}")
-    print(f"empty: {not result} infinite: {result.infinite}")
-
-
-    num = 0
-    res = iter(result.raw)
-    #for i in range(num):
-    #    next(res)
-    #print(len(next(res)))
-    print("ok")
-
-    
-    cProfile.run('r_num = result.raw[num]')
-    print(r_num[0].rule)
-    #cProfile.run('print(f"result {num}: {deep_str(result.evaluated[num])}")')
-
-    #print(result.raw.unsafe_max_size())
-    print(result.size())
+    # def id(x):
+    #     return x
+    # x = 42
+    #
+    # def loopOk(y):
+    #     return y+1
+    #
+    # repo = {id: Intersection(Arrow(Constructor("Int"), Constructor("Int")),
+    #                            Arrow(Constructor("Foo"), Intersection(Constructor("Bar"), Constructor("Baz")))),
+    #         x: Intersection(Constructor("Int"), Constructor("Foo2")),
+    #         "pruned": Arrow(Constructor("Impossible"), Intersection(Constructor("Int"), Constructor("Foo"))),
+    #         "loop": Arrow(Constructor("Impossible"), Constructor("Impossible")),
+    #         loopOk: Intersection(Arrow(Constructor("Int"), Constructor("Int")),
+    #                                 Arrow(Intersection(Constructor("Baz"), Constructor("Bar")), Intersection(Constructor("Bar"), Constructor("Baz"))))
+    #         #"l" : Constructor("List", Constructor("Int")) # List[Int]
+    #         #"f" : Arrow(Constructor("Int"), Arrow(Constructor("Int"), Constructor("String"))) # def f(x: Int) -> (Int -> String)
+    #         }
+    # inhab = FiniteCombinatoryLogic(repo, Subtypes({"Foo2": {"Foo"}, "X": {"Int"}}))
+    # result = inhab.inhabit(Intersection(Constructor("Int"), Constructor("Baz")), Intersection(Constructor("Int"), Constructor("Foo2")))
+    # print(f"rules: {deep_str(result.grouped_rules)}")
+    # print(f"empty: {not result} infinite: {result.infinite}")
+    #
+    #
+    # num = 0
+    # res = iter(result.raw)
+    # #for i in range(num):
+    # #    next(res)
+    # #print(len(next(res)))
+    # print("ok")
+    #
+    #
+    # cProfile.run('r_num = result.raw[num]')
+    # print(r_num[0].rule)
+    # #cProfile.run('print(f"result {num}: {deep_str(result.evaluated[num])}")')
+    #
+    # #print(result.raw.unsafe_max_size())
+    # print(result.size())
 
     #print(f"result {num}: {deep_str(result.evaluated[num])}")
     #print(f"result {num+1}: {deep_str(result.raw[num+1])}")
@@ -614,5 +618,13 @@ if __name__ == "__main__":
     #         print(deep_str(trees))
     #         input("Press enter for next")
 
-
+    left = Left()
+    lab = {left: Arrow(Constructor("Pos", Product(Constructor("1"), Constructor("1"))),
+                         Constructor("Pos", Product(Constructor("0"), Constructor("1")))),
+           "start": Constructor("Pos", Product(Constructor("1"), Constructor("1")))}
+    inhab = FiniteCombinatoryLogic(lab, Subtypes({}))
+    result = inhab.inhabit(Constructor("Pos", Product(Constructor("0"), Constructor("1"))))
+    if not result.infinite:
+        print(deep_str([r for r in result.raw[0:result.size()]]))  # Bäume (deep_str weil print auf den listen elementen .repr statt .str aufruft)
+        print(deep_str([i for i in result.evaluated[0:result.size()]]))
 
