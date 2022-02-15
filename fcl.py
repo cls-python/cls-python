@@ -565,13 +565,8 @@ class FiniteCombinatoryLogic(object):
                     result.add(rule)
         return result
 
-
-class Left(object):
-    def __call__(self, x):
-        return f"{x} then go left"
-
 if __name__ == "__main__":
-
+    pass
     # def id(x):
     #     return x
     # x = 42
@@ -617,14 +612,3 @@ if __name__ == "__main__":
     #     for trees in enum:
     #         print(deep_str(trees))
     #         input("Press enter for next")
-
-    left = Left()
-    lab = {left: Arrow(Constructor("Pos", Product(Constructor("1"), Constructor("1"))),
-                         Constructor("Pos", Product(Constructor("0"), Constructor("1")))),
-           "start": Constructor("Pos", Product(Constructor("1"), Constructor("1")))}
-    inhab = FiniteCombinatoryLogic(lab, Subtypes({}))
-    result = inhab.inhabit(Constructor("Pos", Product(Constructor("0"), Constructor("1"))))
-    if not result.infinite:
-        print(deep_str([r for r in result.raw[0:result.size()]]))  # Bäume (deep_str weil print auf den listen elementen .repr statt .str aufruft)
-        print(deep_str([i for i in result.evaluated[0:result.size()]]))
-
