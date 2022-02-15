@@ -1,11 +1,11 @@
 import luigi
-import inhabitation_task
+from inhabitation_task import LuigiCombinator, ClsParameter, RepoMeta, InhabitationTask, TaskState, states
 from fcl import FiniteCombinatoryLogic, Subtypes
 
 import time
 
 
-class WriteFileTask(luigi.Task, inhabitation_task.LuigiCombinator):
+class WriteFileTask(luigi.Task, LuigiCombinator):
 
     def output(self):
         return luigi.LocalTarget('pure_hello_world.txt')
@@ -16,8 +16,8 @@ class WriteFileTask(luigi.Task, inhabitation_task.LuigiCombinator):
             f.write("Hello World")
 
 
-class SubstituteWeltTask(luigi.Task, inhabitation_task.LuigiCombinator):
-    write_file_task = inhabitation_task.ClsParameter(tpe=WriteFileTask.return_type())
+class SubstituteWeltTask(luigi.Task, LuigiCombinator):
+    write_file_task = ClsParameter(tpe=WriteFileTask.return_type())
 
     def requires(self):
         return self.write_file_task()
@@ -36,9 +36,9 @@ class SubstituteWeltTask(luigi.Task, inhabitation_task.LuigiCombinator):
 
 
 
-class SubstituteNameTask(luigi.Task, inhabitation_task.LuigiCombinator):
+class SubstituteNameTask(luigi.Task, LuigiCombinator):
     abstract = True
-    write_file_task = inhabitation_task.ClsParameter(tpe=WriteFileTask.return_type())
+    write_file_task = ClsParameter(tpe=WriteFileTask.return_type())
 
     def requires(self):
         return self.write_file_task()
@@ -60,7 +60,7 @@ class SubstituteNameByAnneTask(SubstituteNameTask):
             outfile.write(text)
 
 
-class SubstituteNameByJanTask(luigi.Task, inhabitation_task.LuigiCombinator):
+class SubstituteNameByJanTask(luigi.Task, LuigiCombinator):
     abstract = False
 
     def output(self):
@@ -76,8 +76,8 @@ class SubstituteNameByJanTask(luigi.Task, inhabitation_task.LuigiCombinator):
             outfile.write(text)
 
 
-class SubstituteNameByAnneTask2(luigi.Task, inhabitation_task.LuigiCombinator):
-    write_file_task = inhabitation_task.ClsParameter(tpe=WriteFileTask.return_type())
+class SubstituteNameByAnneTask2(luigi.Task, LuigiCombinator):
+    write_file_task = ClsParameter(tpe=WriteFileTask.return_type())
 
     def requires(self):
         return self.write_file_task()
@@ -95,8 +95,8 @@ class SubstituteNameByAnneTask2(luigi.Task, inhabitation_task.LuigiCombinator):
             outfile.write(text)
 
 
-class SubstituteNameByJanTask2(luigi.Task, inhabitation_task.LuigiCombinator):
-    write_file_task = inhabitation_task.ClsParameter(tpe=WriteFileTask.return_type())
+class SubstituteNameByJanTask2(luigi.Task, LuigiCombinator):
+    write_file_task = ClsParameter(tpe=WriteFileTask.return_type())
 
     def requires(self):
         return self.write_file_task()
@@ -114,8 +114,8 @@ class SubstituteNameByJanTask2(luigi.Task, inhabitation_task.LuigiCombinator):
             outfile.write(text)
 
 
-class SubstituteNameByParameterTask(luigi.Task, inhabitation_task.LuigiCombinator):
-    write_file_task = inhabitation_task.ClsParameter(tpe=WriteFileTask.return_type())
+class SubstituteNameByParameterTask(luigi.Task, LuigiCombinator):
+    write_file_task = ClsParameter(tpe=WriteFileTask.return_type())
     name = luigi.Parameter()
 
     def requires(self):
@@ -134,8 +134,8 @@ class SubstituteNameByParameterTask(luigi.Task, inhabitation_task.LuigiCombinato
             outfile.write(text)
 
 
-class SubstituteNameConfigTask(luigi.Task, inhabitation_task.LuigiCombinator):
-    x = inhabitation_task.ClsParameter(tpe={1: SubstituteNameByJanTask2.return_type(),
+class SubstituteNameConfigTask(luigi.Task, LuigiCombinator):
+    x = ClsParameter(tpe={1: SubstituteNameByJanTask2.return_type(),
                                             2: SubstituteNameByAnneTask2.return_type()})
     config_domain = {1, 2}
     config_index = luigi.IntParameter()
@@ -155,15 +155,16 @@ class SubstituteNameConfigTask(luigi.Task, inhabitation_task.LuigiCombinator):
         self.done = True
 
 
-class FinalTask(luigi.Task, inhabitation_task.LuigiCombinator):
-    substitute_name = inhabitation_task.ClsParameter(tpe=SubstituteNameByParameterTask.return_type())
+class FinalTask(luigi.Task, LuigiCombinator):
+    z = ClsParameter(tpe={"1": SubstituteNameByParameterTask.return_type(),
+                                            "2": SubstituteNameByParameterTask.return_type()})
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.done = False
 
     def requires(self):
-        return [self.substitute_name("uiui")]
+        return [self.z("uiuiui") if self.config_index == "1" else self.z("oioioi")]
 
     def complete(self):
         return self.done
@@ -175,8 +176,8 @@ class FinalTask(luigi.Task, inhabitation_task.LuigiCombinator):
 
 if __name__ == '__main__':
     target = FinalTask.return_type()
-    repository = inhabitation_task.RepoMeta.repository
-    fcl = FiniteCombinatoryLogic(repository, Subtypes(inhabitation_task.RepoMeta.subtypes))
-    task = inhabitation_task.InhabitationTask()
-    inhabitation_task.states[task.task_id] = inhabitation_task.TaskState(fcl, target)
-    luigi.build([task], worker_scheduler_factory=inhabitation_task.states[task.task_id].worker_scheduler_factory)
+    repository = RepoMeta.repository
+    fcl = FiniteCombinatoryLogic(repository, Subtypes(RepoMeta.subtypes))
+    task = InhabitationTask()
+    states[task.task_id] = TaskState(fcl, target)
+    luigi.build([task], worker_scheduler_factory=states[task.task_id].worker_scheduler_factory)

@@ -9,13 +9,13 @@ import cls_json
 from typing import ClassVar, Any, TypeVar, Generic, Union
 from typing import Type as PyType
 
-
 from fcl import FiniteCombinatoryLogic, InhabitationResult, Tree, Combinator, Apply
 from itypes import *
 from subtypes import Subtypes
 import luigi
 from luigi.task_register import Register
 from multiprocessing import Process
+
 
 @dataclass
 class TaskState(object):
@@ -25,7 +25,8 @@ class TaskState(object):
     position: int = field(init=False, default=-1)
     stopped: bool = field(init=False, default=False)
     processes: list[Process] = field(init=False, default_factory=lambda: [])
-    worker_scheduler_factory: luigi.interface._WorkerSchedulerFactory = field(init=True, default_factory=luigi.interface._WorkerSchedulerFactory)
+    worker_scheduler_factory: luigi.interface._WorkerSchedulerFactory = field(init=True,
+                                                                              default_factory=luigi.interface._WorkerSchedulerFactory)
 
 
 states: dict[str, TaskState] = dict()
@@ -74,9 +75,11 @@ class InhabitationTask(luigi.Task):
 
                 def p(next_task, factory):
                     luigi.build([next_task], worker_scheduler_factory=factory)
+
                 task_process = Process(target=p, args=(next_task, state.worker_scheduler_factory))
                 task_process.start()
                 state.processes.append(task_process)
+                # p(next_task, state.worker_scheduler_factory)
 
     def complete(self):
         return states[self.task_id].stopped
@@ -100,8 +103,6 @@ class InhabitationTest(luigi.Task):
 
     def complete(self):
         return self.done
-
-
 
 
 ConfigIndex = TypeVar("ConfigIndex")
@@ -195,9 +196,8 @@ class RepoMeta(Register):
         cls_tpe: str = RepoMeta.cls_tpe(cls)
         RepoMeta.subtypes[RepoMeta.TaskCtor(cls)] = \
             {RepoMeta.TaskCtor(b)
-                for b in bases
-                if issubclass(b, LuigiCombinator) and not issubclass(LuigiCombinator, b)}
-
+             for b in bases
+             if issubclass(b, LuigiCombinator) and not issubclass(LuigiCombinator, b)}
 
         # Update repository
         cls_params = [(name, param) for name, param in cls.get_params() if isinstance(param, ClsParameter)]
@@ -239,6 +239,7 @@ class RepoMeta(Register):
                     else:
                         tpe = Arrow(param.tpe[idx], tpe)
                 return Arrow(Constructor(RepoMeta.ClassIndex(cls, idx)), tpe)
+
             return Type.intersect(list(map(at_index, index_set)))
 
     @staticmethod
@@ -375,7 +376,6 @@ class CLSLuigiDecoder(cls_json.CLSDecoder):
         return super(CLSLuigiDecoder, self).__call__(dct)
 
 
-
 class LuigiCombinator(Generic[ConfigIndex], metaclass=RepoMeta):
     config_index = luigi.OptionalParameter(positional=False, default="")
     config_domain: set[ConfigIndex] | None = None
@@ -387,156 +387,3 @@ class LuigiCombinator(Generic[ConfigIndex], metaclass=RepoMeta):
             return Constructor(RepoMeta.TaskCtor(cls))
         else:
             return Constructor(RepoMeta.TaskCtor(cls), Constructor(RepoMeta.ClassIndex(cls, idx)))
-
-
-class Base1(luigi.Task, LuigiCombinator):
-
-    def __init__(self, *args, **kwargs):
-        super(Base1, self).__init__(*args, **kwargs)
-        self.done = False
-
-    def requires(self):
-        return []
-
-    def run(self):
-        self.done = True
-
-    def complete(self):
-        return bool(self.done)
-
-
-class Base2(luigi.Task, LuigiCombinator):
-    p = luigi.Parameter()
-
-    def __init__(self, *args, **kwargs):
-        super(Base2, self).__init__(*args, **kwargs)
-        self.done = False
-
-    def requires(self):
-        return []
-
-    def run(self):
-        self.done = True
-
-    def complete(self):
-        return bool(self.done)
-
-class Foo(luigi.Task, LuigiCombinator):
-    x = ClsParameter(tpe=Base1.return_type())
-    z = ClsParameter(tpe={"1": Base1.return_type(), "2": Base2.return_type()})
-
-    def __init__(self, *args, **kwargs):
-        super(Foo, self).__init__(*args, **kwargs)
-        self.done = False
-
-    def requires(self):
-        return [self.x(), self.z() if self.config_index == "1" else self.z(p="base2")]
-
-    def run(self):
-        self.done = True
-
-    def complete(self):
-        return bool(self.done)
-
-
-class Boo(luigi.Task, LuigiCombinator):
-    y = ClsParameter(tpe={"1": Foo.return_type("1"), "2": Foo.return_type("2")})
-
-    def __init__(self, *args, **kwargs):
-        super(Boo, self).__init__(*args, **kwargs)
-        self.done = False
-
-    def requires(self):
-        return [self.y()]
-
-    def run(self):
-        self.done = True
-
-    def complete(self):
-        return bool(self.done)
-
-
-class Bar(Foo, Boo):
-    def requires(self):
-        return Foo.requires(self) + Boo.requires(self)
-
-    def run(self):
-        Foo.run(self)
-        Boo.run(self)
-
-class ABlubb(luigi.Task, LuigiCombinator):
-    config_index = luigi.IntParameter(positional=False)
-    x = ClsParameter(tpe={1: Base1.return_type(), 2: Base2.return_type()})
-    abstract = True
-
-class Blubb1(ABlubb):
-    abstract = False
-
-    def __init__(self, *args, **kwargs):
-        super(Blubb1, self).__init__(*args, **kwargs)
-        self.done = False
-
-    def requires(self):
-        return []
-
-    def run(self):
-        self.done = True
-
-    def complete(self):
-        return bool(self.done)
-
-class Blubb2(ABlubb):
-    abstract = False
-
-    def __init__(self, *args, **kwargs):
-        super(Blubb2, self).__init__(*args, **kwargs)
-        self.done = False
-
-    def requires(self):
-        return []
-
-    def run(self):
-        self.done = True
-
-    def complete(self):
-        return bool(self.done)
-
-# class ClsTask(object):
-#     @dataclass(init=True, frozen=True)
-#     class TaskInfo:
-#         requires: Type = field(init=True)
-#         cls: PyType[luigi.Task] = field(init=True)
-#
-#     known_tasks: ClassVar[set[TaskInfo]]
-#
-#     def __init__(self, *requirements: Type):
-#         self.requirements = requirements
-#
-#     def __call__(self, cls: PyType[luigi.Task]):
-#
-#         @functools.wraps(cls)
-#         def wrapper_singleton(*args, **kwargs):
-#             if not wrapper_singleton.instance:
-#                 wrapper_singleton.instance = cls(*args, **kwargs)
-#             return wrapper_singleton.instance
-#         wrapper_singleton.instance = None
-#         return wrapper_singleton
-
-
-from fcl import deep_str
-
-if __name__ == '__main__':
-    worker_scheduler_factory = luigi.interface._WorkerSchedulerFactory()
-    #target = Constructor("Test")
-    #repository = {InhabitationTest(id=0): target, InhabitationTest(id=1): target}
-    #fcl = FiniteCombinatoryLogic(repository, Subtypes(dict()))
-    target = Bar.return_type("1")
-    repository = RepoMeta.repository
-    print(deep_str(repository))
-    fcl = FiniteCombinatoryLogic(repository, Subtypes(RepoMeta.subtypes))
-    task = InhabitationTask()
-    states[task.task_id] = TaskState(fcl, target, worker_scheduler_factory=worker_scheduler_factory)
-    luigi.build([task], worker_scheduler_factory=states[task.task_id].worker_scheduler_factory)
-
-
-

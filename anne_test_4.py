@@ -5,7 +5,7 @@ from inhabitation_task import RepoMeta
 from fcl import FiniteCombinatoryLogic, Subtypes
 
 if __name__ == "__main__":
-    target = FinalTask.return_type()
+    target = FinalTask.return_type() # hier könnte ich auch den Index wieder übergeben, z.B. return_type(2)
     repository = RepoMeta.repository
     fcl = FiniteCombinatoryLogic(repository, Subtypes(RepoMeta.subtypes))
     inhabitation_result = fcl.inhabit(target)
