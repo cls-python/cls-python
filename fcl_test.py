@@ -1,4 +1,4 @@
-from fcl import Arrow, Constructor, Product, FiniteCombinatoryLogic, Subtypes, deep_str
+from fcl import Arrow, Constructor, Product, FiniteCombinatoryLogic, Subtypes, deep_str, Intersection
 
 
 class Left(object):
@@ -27,10 +27,19 @@ if __name__ == "__main__":
     left = Left()
     down = Down()
 
-    lab = {left: Arrow(Constructor("Pos", Product(Constructor("1"), Constructor("1"))),
-                       Constructor("Pos", Product(Constructor("0"), Constructor("1")))),
+    lab = {left: Intersection(
+                        Arrow(Constructor("Pos", Product(Constructor("1"), Constructor("1"))),
+                                    Constructor("Pos", Product(Constructor("0"), Constructor("1")))),
+                        Arrow(Constructor("Pos", Product(Constructor("2"), Constructor("1"))),
+                                    Constructor("Pos", Product(Constructor("1"), Constructor("1")))),
+                        # Arrow(Constructor("Pos", Product(Constructor("1"), Constructor("3"))),
+                        #             Constructor("Pos", Product(Constructor("0"), Constructor("3")))),
+                        # Arrow(Constructor("Pos", Product(Constructor("2"), Constructor("3"))),
+                        #             Constructor("Pos", Product(Constructor("1"), Constructor("3"))))
+                    ),
            down: Arrow(Constructor("Pos", Product(Constructor("0"), Constructor("1"))),
-                       Constructor("Pos", Product(Constructor("0"), Constructor("2")))),
+                       Constructor("Pos", Product(Constructor("0"), Constructor("2")))
+                       ),
            "start": Constructor("Pos", Product(Constructor("1"), Constructor("1")))}
     inhab = FiniteCombinatoryLogic(lab, Subtypes({}))
     result = inhab.inhabit(Constructor("Pos", Product(Constructor("0"), Constructor("2"))))
