@@ -54,13 +54,13 @@ class Finite(Sequence[A], ABC):
         return FiniteOfSequence(seq)
 
     def _add_opt(self, other: 'Finite[C]') -> 'Finite[Union[C, A]]':
-        return FiniteUnion(self, other)
+        return FiniteUnion(other, self)
 
     def __add__(self, other: 'Finite[C]') -> 'Finite[Union[A, C]]':
         return other._add_opt(self)
 
     def _mul_opt(self, other: 'Finite[C]') -> 'Finite[Tuple[C, A]]':
-        return FiniteProduct(self, other)
+        return FiniteProduct(other, self)
 
     def __mul__(self, other: 'Finite[C]') -> 'Finite[Tuple[A, C]]':
         return other._mul_opt(self)
@@ -402,8 +402,8 @@ class FiniteProduct(Finite[Tuple[A, B]], Generic[A, B]):
 
         def __iter__(self) -> Iterator[ComputationStep]:
             index: int = self.index
-            yield self.outer.size_computation()
-            size: int = self.outer.size
+            yield self.outer.right.size_computation()
+            size: int = self.outer.right.size
             yield self.outer.left.cached_computation(index // size)
             yield self.outer.right.cached_computation(index % size)
             self.outer.cache[index] = \
