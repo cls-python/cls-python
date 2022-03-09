@@ -1117,6 +1117,21 @@ class EnumerationSlice(Finite[A]):
         return self.LocalClearCacheComputation(self)
 
 
+import fractions
+
+class SchweinfurtNumbers(object):
+    def __init__(self):
+        self._fast = Enumeration.ints().map(self._rec)
+
+    def _rec(self, n):
+        if n < 0: return fractions.Fraction(0, 1)
+        elif n == 0: return fractions.Fraction(1, 6)
+        else: return fractions.Fraction(1,6) * \
+                     (-5 * self[n-1] + 2 * self[n-2] + self[n-3])
+
+    def __getitem__(self, n):
+        return 0 if n < 0 else self._fast[n]
+
 if __name__ == "__main__":
     ints: Enumeration[int] = Enumeration.ints()
     print(ints[999999])
@@ -1129,3 +1144,9 @@ if __name__ == "__main__":
     xs = ints + ints
     for x in xs[0:10]:
         print(x)
+
+    schweinf = SchweinfurtNumbers()
+    for n in range(0, 7):
+        print(schweinf[n])
+
+    print(schweinf[99])

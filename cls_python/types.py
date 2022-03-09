@@ -68,7 +68,6 @@ class Type(ABC):
         self.__dict__['organized'] = self._organized()
 
 
-
 @dataclass(frozen=True)
 class Omega(Type):
     is_omega: bool = field(init=False, compare=False)
@@ -78,7 +77,7 @@ class Omega(Type):
 
     def __post_init__(self):
         super().__init__(
-            is_omega=True,
+            is_omega=self._is_omega(),
             size=self._size(),
             organized=self._organized(),
             path=self._path())
@@ -177,7 +176,7 @@ class Product(Type):
                     return other._str_prec(product_prec)
                 case _:
                     return other._str_prec(product_prec + 1)
-        result: str = f"{product_str_prec(self.left)} * {product_str_prec(self.right)}"
+        result: str = f"{product_str_prec(self.left)} * {self.right._str_prec(product_prec + 1)}"
         return Type._parens(result) if prec > product_prec else result
 
 
@@ -253,7 +252,7 @@ class Intersection(Type):
 
         def intersection_str_prec(other: Type) -> str:
             match other:
-                case Arrow(_, _):
+                case Intersection(_, _):
                     return other._str_prec(intersection_prec)
                 case _:
                     return other._str_prec(intersection_prec + 1)

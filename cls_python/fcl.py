@@ -5,16 +5,14 @@ from typing import TypeAlias, Callable, Tuple, Iterable, Any
 from multiprocessing import Pool
 import os
 from collections.abc import Iterator
-from dataclasses import dataclass, field
+
 from abc import ABC, abstractmethod
 from itertools import chain
 from functools import partial, cached_property
 
-from enumeration import Enumeration, ComputationStep, EmptyStep
-from itypes import *
-from subtypes import Subtypes
-
-import cProfile
+from .enumeration import Enumeration, ComputationStep, EmptyStep
+from .types import *
+from .subtypes import Subtypes
 
 
 MultiArrow: TypeAlias = Tuple[list[Type], Type]
@@ -44,7 +42,7 @@ class Combinator(Rule):
     combinator: object = field(init=True)
 
     def __str__(self):
-        return f"Combinator({str(self.combinator)}, {str(self.target)})"
+        return f"Combinator({str(self.target)}, {str(self.combinator)})"
 
 
 @dataclass(frozen=True)
@@ -77,6 +75,8 @@ class Tree(object):
                     yield Tree.Evaluator(self.outer.children[0], f_arg)
                     yield Tree.Evaluator(self.outer.children[1], f_arg)
                     self.results.append(partial(f_arg[0])(f_arg[1]))
+                case _:
+                    raise TypeError(f"Cannot apply rule: {self.outer.rule}")
             yield EmptyStep()
 
     def evaluate(self) -> Any:
@@ -88,7 +88,7 @@ class Tree(object):
         match self.rule:
             case Combinator(_, _): return str(self.rule)
             case Apply(_, _, _): return f"{str(self.children[0])}({str(self.children[1])})"
-            case _: return f"{str(self.rule)} @ {deep_str(self.children)}"
+            case _: return f"{str(self.rule)} @ ({', '.join(map(str, self.children))})"
 
 
 @dataclass(frozen=True)
@@ -118,7 +118,7 @@ class InhabitationResult(object):
         for target in self.targets:
             if self.check_empty(target):
                 return False
-        return True
+        return bool(self.targets)
 
     def __bool__(self) -> bool:
         return self.non_empty
@@ -174,7 +174,7 @@ class InhabitationResult(object):
             size += len(trees)
         return size
 
-    def __get__(self, target: Type) -> Enumeration[Tree]:
+    def __getitem__(self, target: Type) -> Enumeration[Tree]:
         if target in self.enumeration_map:
             return self.enumeration_map[target]
         else:
@@ -229,22 +229,6 @@ class InhabitationResult(object):
             return self.raw.map(lambda t: t.evaluate())
         else:
             return self.raw.map(lambda l: list(map(lambda t: t.evaluate(), l)))
-
-def deep_str(obj) -> str:
-    if isinstance(obj, list):
-        return f"[{','.join(map(deep_str, obj))}]"
-    elif isinstance(obj, dict):
-        return f"map([{','.join(map(lambda kv: ':'.join([deep_str(kv[0]), deep_str(kv[1])]) , obj.items()))}])"
-    elif isinstance(obj, set):
-        return f"set([{','.join(map(deep_str, obj))}])"
-    elif isinstance(obj, tuple):
-        return f"({','.join(map(deep_str, obj))})"
-    elif isinstance(obj, str):
-        return obj
-    elif isinstance(obj, Iterable):
-        return f"iter([{','.join(map(deep_str, obj))}])"
-    else:
-        return str(obj)
 
 
 class FiniteCombinatoryLogic(object):
@@ -308,7 +292,7 @@ class FiniteCombinatoryLogic(object):
     @staticmethod
     def _still_possible(splits: list[Tuple[MultiArrow, set[Type]]], to_cover: set[Type]) -> bool:
         for ty in to_cover:
-            if not filter(lambda covered: ty in covered[1], splits):
+            if not any(ty in covered for _, covered in splits):
                 return False
         return True
 
@@ -418,48 +402,45 @@ class FiniteCombinatoryLogic(object):
                 case Apply(_, _, arg) if arg == target:
                     return False, True
                 case _:
-                    pass
+                    continue
         return False, False
 
     @staticmethod
-    def _commit_multi_arrow(combinator: object, m: MultiArrow) -> Iterator[Rule]:
-        def rev_result() -> Iterator[Rule]:
-            srcs, tgt = m
-            for src in srcs:
-                arr = Arrow(src, tgt)
-                yield Apply(tgt, arr, src)
-                tgt = arr
-            yield Combinator(tgt, combinator)
-        return reversed(list(rev_result()))
+    def _commit_multi_arrow(combinator: object, m: MultiArrow) -> deque[Rule]:
+        result: deque[Rule] = deque()
+        srcs, tgt = m
+        for src in srcs:
+            arr = Arrow(src, tgt)
+            result.appendleft(Apply(tgt, arr, src))
+            tgt = arr
+        result.appendleft(Combinator(tgt, combinator))
+        return result
 
     @staticmethod
     def _commit_updates(target: Type,
                         combinator: object,
-                        covers: Sequence[MultiArrow]) -> Iterator[Rule]:
-        return chain.from_iterable(map(
-            lambda cover: FiniteCombinatoryLogic._commit_multi_arrow(combinator, (cover[0], target)),
-            covers))
-
-    @staticmethod
-    def drop_targets(rules: Iterator[Rule]) -> Iterator[Rule]:
-        return itertools.dropwhile(lambda r: r.is_combinator, rules)
+                        covers: Sequence[MultiArrow]) -> deque[deque[Rule]]:
+        result: deque[deque[Rule]] = deque()
+        for cover in covers:
+            result.append(FiniteCombinatoryLogic._commit_multi_arrow(combinator, (cover[0], target)))
+        return result
 
     def _accumulate_covers(self,
                            target: Type,
                            to_cover: set[Type],
                            combinator: object,
-                           combinator_type: list[list[MultiArrow]]) -> Tuple[list[Rule], bool]:
+                           combinator_type: list[list[MultiArrow]]) -> Tuple[deque[deque[Rule]], bool]:
         def cover_instr(ms: list[MultiArrow]) -> CoverMachineInstruction:
             splits: list[(MultiArrow, set[Type])] = \
                 list(map(lambda m: (m, set(filter(lambda b: self.subtypes.check_subtype(m[1], b), to_cover))), ms))
             return self._cover(splits, to_cover)
 
         covers: list[MultiArrow] = self._cover_machine([], list(map(cover_instr, combinator_type)))
-        next_rules: Iterator[Rule] = \
+        next_rules: deque[deque[Rule]] = \
             FiniteCombinatoryLogic._commit_updates(target, combinator, self._reduce_multi_arrows(covers))
-        return list(next_rules), not covers
+        return next_rules, not covers
 
-    def _inhabit_cover(self, target: Type) -> Tuple[bool, Iterator[Rule]]:
+    def _inhabit_cover(self, target: Type, todo_rules: deque[deque[Rule]]) -> bool:
         prime_factors: set[Type] = self.subtypes.minimize(target.organized)
         with Pool(self.processes) as pool:
             results =\
@@ -468,56 +449,57 @@ class FiniteCombinatoryLogic(object):
                     self.splitted_repository.items(),
                     max(len(self.splitted_repository) // self.processes, 10))
         failed: bool = True
-        new_rules: Iterator[Rule] = iter(())
         for rules, local_fail in results:
             if not local_fail:
                 failed = False
-                new_rules = chain(new_rules, rules)
-        return failed, new_rules
+                todo_rules.extend(rules)
+        return failed
 
     def _omega_rules(self, target: Type) -> set[Rule]:
-        return {Apply(target, target, target), *map(lambda c: Combinator(c, target), self.splitted_repository.keys())}
+        return {Apply(target, target, target),
+                *map(lambda c: Combinator(target, c), self.splitted_repository.keys())}
 
-    def _inhabitation_step(self, stable: set[Rule], target: Rule, targets: Iterator[Rule]) -> Iterator[Rule]:
-        match target:
-            case Combinator(_, _):
-                stable.add(target)
-                return targets
-            case Apply(_, _, _) if target in stable:
-                return targets
-            case Apply(_, _, target_type):
-                failed, existing = self._compute_fail_existing(stable, target_type)
-                if failed:
-                    if not existing:
-                        stable.add(Failed(target_type))
-                    return self.drop_targets(targets)
-                elif existing:
-                    stable.add(target)
-                    return targets
-                elif target_type.is_omega:
-                    stable |= self._omega_rules(target_type)
-                    stable.add(target)
-                    return targets
-                else:
-                    inhabit_failed, nextTargets = self._inhabit_cover(target_type)
-                    if inhabit_failed:
-                        stable.add(Failed(target_type))
-                        return self.drop_targets(targets)
-                    else:
+    def _inhabitation_step(self, stable: set[Rule], targets: deque[deque[Rule]]) -> bool:
+        if targets:
+            if targets[0]:
+                target = targets[0].popleft()
+                match target:
+                    case Combinator(_, _):
                         stable.add(target)
-                        return chain(nextTargets, targets)
-            case _:
-                return self.drop_targets(targets)
+                    case Apply(_, _, _) if target in stable:
+                        pass
+                    case Apply(_, _, target_type):
+                        failed, existing = self._compute_fail_existing(stable, target_type)
+                        if failed:
+                            if not existing:
+                                stable.add(Failed(target_type))
+                        elif existing:
+                            stable.add(target)
+                        elif target_type.is_omega:
+                            stable |= self._omega_rules(target_type)
+                            stable.add(target)
+                        else:
+                            inhabit_failed = self._inhabit_cover(target_type, targets)
+                            if inhabit_failed:
+                                stable.add(Failed(target_type))
+                                targets.popleft()
+                            else:
+                                stable.add(target)
+                    case _:
+                        raise TypeError(f"Invalid type of rule: {target}")
+            else:
+                targets.popleft()
+        return bool(targets)
 
-    def _inhabitation_machine(self, stable: set[Rule], targets: Iterator[Rule]):
-        while target := next(targets, None):
-            targets = self._inhabitation_step(stable, target, targets)
+    def _inhabitation_machine(self, stable: set[Rule], targets: deque[deque[Rule]]):
+        while self._inhabitation_step(stable, targets):
+            pass
 
     def inhabit(self, *targets: Type) -> InhabitationResult:
         result: set[Rule] = set()
         all_targets = list(targets)
-        _targets = iter(all_targets)
-        for target in _targets:
+        todo_rules: deque[deque[Rule]] = deque()
+        for target in all_targets:
             if target.is_omega:
                 result |= self._omega_rules(target)
             else:
@@ -526,11 +508,11 @@ class FiniteCombinatoryLogic(object):
                     if not existing:
                         result.add(Failed(target))
                 else:
-                    inhabit_failed, targets = self._inhabit_cover(target)
+                    inhabit_failed = self._inhabit_cover(target, todo_rules)
                     if inhabit_failed:
                         result.add(Failed(target))
                     else:
-                        self._inhabitation_machine(result, targets)
+                        self._inhabitation_machine(result, todo_rules)
         return InhabitationResult(targets=all_targets, rules=FiniteCombinatoryLogic._prune(result))
 
     @staticmethod
@@ -560,55 +542,8 @@ class FiniteCombinatoryLogic(object):
                     result.add(Failed(target))
                 case Apply(_, function_type, argument_type) if not (function_type in ground_types
                                                                     and argument_type in ground_types):
-                    pass
+                    continue
                 case _:
                     result.add(rule)
         return result
 
-if __name__ == "__main__":
-    pass
-    # def id(x):
-    #     return x
-    # x = 42
-    #
-    # def loopOk(y):
-    #     return y+1
-    #
-    # repo = {id: Intersection(Arrow(Constructor("Int"), Constructor("Int")),
-    #                            Arrow(Constructor("Foo"), Intersection(Constructor("Bar"), Constructor("Baz")))),
-    #         x: Intersection(Constructor("Int"), Constructor("Foo2")),
-    #         "pruned": Arrow(Constructor("Impossible"), Intersection(Constructor("Int"), Constructor("Foo"))),
-    #         "loop": Arrow(Constructor("Impossible"), Constructor("Impossible")),
-    #         loopOk: Intersection(Arrow(Constructor("Int"), Constructor("Int")),
-    #                                 Arrow(Intersection(Constructor("Baz"), Constructor("Bar")), Intersection(Constructor("Bar"), Constructor("Baz"))))
-    #         #"l" : Constructor("List", Constructor("Int")) # List[Int]
-    #         #"f" : Arrow(Constructor("Int"), Arrow(Constructor("Int"), Constructor("String"))) # def f(x: Int) -> (Int -> String)
-    #         }
-    # inhab = FiniteCombinatoryLogic(repo, Subtypes({"Foo2": {"Foo"}, "X": {"Int"}}))
-    # result = inhab.inhabit(Intersection(Constructor("Int"), Constructor("Baz")), Intersection(Constructor("Int"), Constructor("Foo2")))
-    # print(f"rules: {deep_str(result.grouped_rules)}")
-    # print(f"empty: {not result} infinite: {result.infinite}")
-    #
-    #
-    # num = 0
-    # res = iter(result.raw)
-    # #for i in range(num):
-    # #    next(res)
-    # #print(len(next(res)))
-    # print("ok")
-    #
-    #
-    # cProfile.run('r_num = result.raw[num]')
-    # print(r_num[0].rule)
-    # #cProfile.run('print(f"result {num}: {deep_str(result.evaluated[num])}")')
-    #
-    # #print(result.raw.unsafe_max_size())
-    # print(result.size())
-
-    #print(f"result {num}: {deep_str(result.evaluated[num])}")
-    #print(f"result {num+1}: {deep_str(result.raw[num+1])}")
-    #print(f"result {num+2}: {deep_str(result.raw[num+2])}")')
-    # for enum in result.evaluated:
-    #     for trees in enum:
-    #         print(deep_str(trees))
-    #         input("Press enter for next")

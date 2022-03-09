@@ -1,4 +1,4 @@
-from fcl import Arrow, Constructor, Product, FiniteCombinatoryLogic, Subtypes, deep_str, Intersection
+from cls_python import Arrow, Constructor, Product, FiniteCombinatoryLogic, Subtypes, deep_str, Intersection
 
 
 class Left(object):
@@ -43,6 +43,7 @@ if __name__ == "__main__":
            "start": Constructor("Pos", Product(Constructor("1"), Constructor("1")))}
     inhab = FiniteCombinatoryLogic(lab, Subtypes({}))
     result = inhab.inhabit(Constructor("Pos", Product(Constructor("0"), Constructor("2"))))
+    print(result.infinite)
     if not result.infinite:
         print(deep_str([r for r in result.raw[
                                    0:result.size()]]))  # Bäume (deep_str weil print auf den listen elementen .repr statt .str aufruft)

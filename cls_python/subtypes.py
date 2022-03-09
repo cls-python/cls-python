@@ -1,6 +1,10 @@
-from itypes import *
+from abc import ABC, abstractmethod
 from collections.abc import Iterator, Sequence
+from typing import TypeAlias, Callable
 
+from .types import *
+
+SubtypeInstruction: TypeAlias = Callable[[list[bool | Type], list['SubtypeInstruction']], None]
 
 class Subtypes(object):
     def __init__(self, environment: dict[object, set]):
@@ -24,14 +28,18 @@ class Subtypes(object):
                     tgt
                 )
             case Product(l, r):
-                (ls, rs) = tuple(zip(*self.cast(supertype, subtype)))
-                return len(ls) > 0 \
-                    and self.check_subtype(Type.intersect(ls), l) \
-                    and self.check_subtype(Type.intersect(rs), r)
+                casted = self.cast(supertype, subtype)
+                if casted:
+                    (ls, rs) = tuple(zip(*casted))
+                    return len(ls) > 0 \
+                        and self.check_subtype(Type.intersect(ls), l) \
+                        and self.check_subtype(Type.intersect(rs), r)
+                else:
+                    return False
             case Intersection(l, r):
                 return self.check_subtype(subtype, l) and self.check_subtype(subtype, r)
             case _:
-                return False
+                raise TypeError(f"Unsupported type: {supertype}")
 
     def cast(self, to: Type, castee: Type) -> Sequence:
         match to:
@@ -75,7 +83,7 @@ class Subtypes(object):
 
                 return cast_rec(castee, [])
             case _:
-                return []
+                raise TypeError(f"Unsupported type: {to}")
 
     @staticmethod
     def _reflexive_closure(env: dict[object, set]) -> dict[object, set]:
@@ -93,7 +101,7 @@ class Subtypes(object):
         while has_changed:
             has_changed = False
             for (subtype, known_supertypes) in result.items():
-                for supertype in known_supertypes:
+                for supertype in known_supertypes.copy():
                     to_add: set = {new_supertype for new_supertype in result[supertype]
                                    if new_supertype not in known_supertypes}
                     if to_add:
@@ -108,4 +116,3 @@ class Subtypes(object):
             if all(map(lambda ot: not self.check_subtype(ot, ty), result)):
                 result = {ty, *(ot for ot in result if not self.check_subtype(ty, ot))}
         return result
-

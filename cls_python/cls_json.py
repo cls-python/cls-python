@@ -1,8 +1,8 @@
 import json
 
-from fcl import Combinator, Tree, Apply, Failed, InhabitationResult, FiniteCombinatoryLogic
-from itypes import Arrow, Intersection, Product, Omega, Constructor
-from subtypes import Subtypes
+from .fcl import Combinator, Tree, Apply, Failed, InhabitationResult, FiniteCombinatoryLogic
+from .types import Arrow, Intersection, Product, Omega, Constructor
+from .subtypes import Subtypes
 
 
 class CLSEncoder(json.JSONEncoder):
