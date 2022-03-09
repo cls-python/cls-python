@@ -5,13 +5,10 @@ import importlib
 import json
 from collections import deque
 
-import cls_json
 from typing import ClassVar, Any, TypeVar, Generic, Union
 from typing import Type as PyType
+from cls_python import *
 
-from fcl import FiniteCombinatoryLogic, InhabitationResult, Tree, Combinator, Apply
-from itypes import *
-from subtypes import Subtypes
 import luigi
 from luigi.task_register import Register
 from multiprocessing import Process

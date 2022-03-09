@@ -2,7 +2,7 @@ import luigi
 from anne_test_3 import WriteFileTask, FinalTask, SubstituteWeltTask, SubstituteNameTask, \
     SubstituteNameConfigTask, SubstituteNameByJanTask2
 from inhabitation_task import RepoMeta
-from fcl import FiniteCombinatoryLogic, Subtypes
+from cls_python import FiniteCombinatoryLogic, Subtypes
 
 if __name__ == "__main__":
     target = FinalTask.return_type() # hier könnte ich auch den Index wieder übergeben, z.B. return_type(2)

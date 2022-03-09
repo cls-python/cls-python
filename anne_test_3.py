@@ -1,6 +1,6 @@
 import luigi
 from inhabitation_task import LuigiCombinator, ClsParameter, RepoMeta, InhabitationTask, TaskState, states
-from fcl import FiniteCombinatoryLogic, Subtypes
+from cls_python import FiniteCombinatoryLogic, Subtypes
 
 import time
 

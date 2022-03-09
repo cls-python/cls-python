@@ -1,3 +1,6 @@
+from typing import Iterable
+
+
 def deep_str(obj) -> str:
     if isinstance(obj, list):
         return f"[{','.join(map(deep_str, obj))}]"

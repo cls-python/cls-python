@@ -1,4 +1,7 @@
-from cls_python import Arrow, Constructor, Product, FiniteCombinatoryLogic, Subtypes, deep_str, Intersection
+from cls_python import Arrow, Constructor, Product, FiniteCombinatoryLogic, Subtypes, Intersection
+from cls_python.debug_util import deep_str
+
+
 
 
 class Left(object):

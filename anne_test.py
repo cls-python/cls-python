@@ -1,7 +1,7 @@
 import luigi
 
 import inhabitation_task
-from fcl import FiniteCombinatoryLogic, Subtypes
+from cls_python import FiniteCombinatoryLogic, Subtypes
 
 
 class Test1(luigi.Task, inhabitation_task.LuigiCombinator):
