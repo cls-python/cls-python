@@ -40,7 +40,7 @@ if __name__ == "__main__":
                         # Arrow(Constructor("Pos", Product(Constructor("2"), Constructor("3"))),
                         #             Constructor("Pos", Product(Constructor("1"), Constructor("3"))))
                     ),
-           down: Arrow(Constructor("Pos", Product(Constructor("0"), Constructor("1"))),
+           down: Arrow(Constructor("Pos", Product(Constructor("1"), Constructor("1"))),
                        Constructor("Pos", Product(Constructor("0"), Constructor("2")))
                        ),
            "start": Constructor("Pos", Product(Constructor("1"), Constructor("1")))}
