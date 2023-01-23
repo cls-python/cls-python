@@ -1,0 +1,23 @@
+name: Build Docs
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+jobs:
+    docs:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository content
+              uses: actions/checkout@v3
+            - name: Make the docs
+              uses: ammaraskar/sphinx-action@master
+              with:
+                  docs-folder: "docs/"
+            - name: Upload Docs
+              uses: actions/upload-artifact@v1
+              with:
+                  name: CLS-Python Documentation
+                  path: docs/_build/html/

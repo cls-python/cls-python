@@ -1,7 +1,8 @@
 import unittest
 
-from cls_python import *
-from cls_python.debug_util import deep_str
+from cls_python.fcl import Apply, Combinator, FiniteCombinatoryLogic, Tree
+from cls_python.subtypes import Subtypes
+from cls_python.types import Arrow, Constructor
 
 A = Constructor("A")
 B = Constructor("B")
@@ -22,6 +23,7 @@ repository = {
     "f2": F,
     "g": G,
 }
+
 
 class TestParameterOrder(unittest.TestCase):
     def setUp(self) -> None:
@@ -48,11 +50,15 @@ class TestParameterOrder(unittest.TestCase):
         a = Tree(Apply(A, Arrow(E, A), E), (ea, e))
         a2 = Tree(Apply(A, Arrow(E, A), E), (ea2, e))
 
-        gdb = Tree(Apply(Arrow(G, Arrow(D, B)), Arrow(F, Arrow(G, Arrow(D, B))), F), (fgdb, f))
+        gdb = Tree(
+            Apply(Arrow(G, Arrow(D, B)), Arrow(F, Arrow(G, Arrow(D, B))), F), (fgdb, f)
+        )
         db = Tree(Apply(Arrow(D, B), Arrow(G, Arrow(D, B)), G), (gdb, g))
         b = Tree(Apply(B, Arrow(D, B), D), (db, d))
 
-        gdb2 = Tree(Apply(Arrow(G, Arrow(D, B)), Arrow(F, Arrow(G, Arrow(D, B))), F), (fgdb, f2))
+        gdb2 = Tree(
+            Apply(Arrow(G, Arrow(D, B)), Arrow(F, Arrow(G, Arrow(D, B))), F), (fgdb, f2)
+        )
         db2 = Tree(Apply(Arrow(D, B), Arrow(G, Arrow(D, B)), G), (gdb2, g))
         b2 = Tree(Apply(B, Arrow(D, B), D), (db2, d))
 
@@ -68,5 +74,6 @@ class TestParameterOrder(unittest.TestCase):
         expected = {c, c2, c3, c4}
         self.assertEqual(got, expected)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

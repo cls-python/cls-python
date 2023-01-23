@@ -1,13 +1,14 @@
-import multiprocessing
 import unittest
 from collections import deque
-from typing import Callable
+from collections.abc import Callable
 
-from cls_python import *
 from cls_python.enumeration import Enumeration
+from cls_python.fcl import Apply, Combinator, Failed, FiniteCombinatoryLogic, Rule, Tree
+from cls_python.subtypes import Subtypes
+from cls_python.types import Arrow, Constructor, Intersection, Omega, Product, Type
 
 
-class Succ(object):
+class Succ:
     def __call__(self, x: int) -> int:
         return 1 + x
 
@@ -24,7 +25,7 @@ class Succ(object):
         return 999
 
 
-class DummyHead(object):
+class DummyHead:
     def __call__(self, x: list[int]) -> int:
         return x[0]
 
@@ -38,7 +39,7 @@ class DummyHead(object):
         return 9999
 
 
-class DummyAppend(object):
+class DummyAppend:
     def __call__(self, x: list[int]) -> Callable[[list[int]], list[int]]:
         return lambda y: x + y
 
@@ -52,7 +53,7 @@ class DummyAppend(object):
         return 99999
 
 
-class StrApp(object):
+class StrApp:
     def __init__(self, x: int):
         self.x = x
 
@@ -92,8 +93,8 @@ dummyAppend = DummyAppend()
 str_app0 = StrApp(0)
 str_app1 = StrApp(1)
 unary_nat_and_strings = {
-    succ:
-        Type.intersect([
+    succ: Type.intersect(
+        [
             Arrow(Intersection(nat, even), Intersection(nat, odd)),
             Arrow(Intersection(nat, odd), Intersection(nat, even)),
             # Rest is redundant / impossible / unnecessary, but triggers code branches in tests
@@ -110,38 +111,68 @@ unary_nat_and_strings = {
             Arrow(Type.intersect([nat, odd, even]), Type.intersect([nat, even])),
             Arrow(Type.intersect([nat, odd, even]), Constructor("List", integer)),
             Arrow(Constructor("List", integer), Constructor("List", nat)),
-            Arrow(Omega(), Arrow(Constructor("List", integer), Constructor("List", nat))),
-            Arrow(Constructor("Seq", integer), Arrow(Constructor("Seq", nat), Type.intersect([nat, even, odd])))
-        ]),
+            Arrow(
+                Omega(), Arrow(Constructor("List", integer), Constructor("List", nat))
+            ),
+            Arrow(
+                Constructor("Seq", integer),
+                Arrow(Constructor("Seq", nat), Type.intersect([nat, even, odd])),
+            ),
+        ]
+    ),
     # Unused except for Omega
-    dummyHead: Type.intersect([
-        Arrow(Constructor("List", nat), nat),
-        Arrow(Constructor("List", even), even),
-        Arrow(Constructor("List", odd), odd),
-        Arrow(Constructor("List", integer), integer),
-        Arrow(Constructor("List", negative), negative)
-    ]),
+    dummyHead: Type.intersect(
+        [
+            Arrow(Constructor("List", nat), nat),
+            Arrow(Constructor("List", even), even),
+            Arrow(Constructor("List", odd), odd),
+            Arrow(Constructor("List", integer), integer),
+            Arrow(Constructor("List", negative), negative),
+        ]
+    ),
     # Unused except for Omega
-    dummyAppend: Type.intersect([
-        Arrow(Constructor("List", nat), Arrow(Constructor("List", nat), Constructor("List", nat))),
-        Arrow(Constructor("List", even), Arrow(Constructor("List", even), Constructor("List", even))),
-        Arrow(Constructor("List", odd), Arrow(Constructor("List", odd), Constructor("List", odd))),
-        Arrow(Constructor("List", integer), Arrow(Constructor("List", integer), Constructor("List", integer))),
-        Arrow(Constructor("List", negative), Arrow(Constructor("List", negative), Constructor("List", negative)))
-    ]),
+    dummyAppend: Type.intersect(
+        [
+            Arrow(
+                Constructor("List", nat),
+                Arrow(Constructor("List", nat), Constructor("List", nat)),
+            ),
+            Arrow(
+                Constructor("List", even),
+                Arrow(Constructor("List", even), Constructor("List", even)),
+            ),
+            Arrow(
+                Constructor("List", odd),
+                Arrow(Constructor("List", odd), Constructor("List", odd)),
+            ),
+            Arrow(
+                Constructor("List", integer),
+                Arrow(Constructor("List", integer), Constructor("List", integer)),
+            ),
+            Arrow(
+                Constructor("List", negative),
+                Arrow(Constructor("List", negative), Constructor("List", negative)),
+            ),
+        ]
+    ),
     0: Type.intersect([integer, nat, even, zero]),
-    str_app0: Type.intersect([
-        Arrow(Intersection(hello, goodbye), Arrow(world, msg(unclear))),
-        Arrow(hello, Arrow(world, msg(hello))),
-        Arrow(goodbye, Arrow(world, msg(goodbye))),
-        Arrow(msg(hello), Arrow(emphasis, msg(Product(hello, emphasis))))
-    ]),
-    str_app1: Arrow(msg(Product(hello, emphasis)), Arrow(emphasis, msg(Product(hello, Product(emphasis, emphasis))))),
+    str_app0: Type.intersect(
+        [
+            Arrow(Intersection(hello, goodbye), Arrow(world, msg(unclear))),
+            Arrow(hello, Arrow(world, msg(hello))),
+            Arrow(goodbye, Arrow(world, msg(goodbye))),
+            Arrow(msg(hello), Arrow(emphasis, msg(Product(hello, emphasis)))),
+        ]
+    ),
+    str_app1: Arrow(
+        msg(Product(hello, emphasis)),
+        Arrow(emphasis, msg(Product(hello, Product(emphasis, emphasis)))),
+    ),
     "hello ": hello,
     "goodbye ": goodbye,
     "world": world,
-    "!": emphasis
-    }
+    "!": emphasis,
+}
 subtypes = {nat.name: {integer.name}}
 
 
@@ -172,7 +203,9 @@ def st_equals_tree(st: Subtypes, t1: Tree, t2: Tree) -> bool:
 
 class TestFCL(unittest.TestCase):
     def setUp(self) -> None:
-        self.gamma = FiniteCombinatoryLogic(unary_nat_and_strings, Subtypes(subtypes), processes=1)
+        self.gamma = FiniteCombinatoryLogic(
+            unary_nat_and_strings, Subtypes(subtypes), processes=1
+        )
 
     def test_inhabit_nat(self):
         results = self.gamma.inhabit(nat)
@@ -181,49 +214,77 @@ class TestFCL(unittest.TestCase):
         self.assertLess(results.size(), 0)
         self.assertIn(Combinator(nat, 0), results.rules)
         self.assertIn(
-            Apply(nat,
-                  Arrow(Intersection(nat, even), nat),
-                  Intersection(nat, even)),
-            results.rules)
+            Apply(nat, Arrow(Intersection(nat, even), nat), Intersection(nat, even)),
+            results.rules,
+        )
         self.assertIn("@(Nat & Even -> Nat, Nat & Even) : Nat", map(str, results.rules))
-        self.assertIn(Combinator(Arrow(Intersection(nat, even), nat), succ), results.rules)
+        self.assertIn(
+            Combinator(Arrow(Intersection(nat, even), nat), succ), results.rules
+        )
         self.assertEqual(Tree(Combinator(nat, 0), ()), results.raw[0])
 
         odd_even = Apply(
             Intersection(nat, even),
             Arrow(Intersection(nat, odd), Intersection(nat, even)),
-            Intersection(nat, odd))
+            Intersection(nat, odd),
+        )
         even_odd = Apply(
             Intersection(nat, odd),
             Arrow(Intersection(nat, even), Intersection(nat, odd)),
-            Intersection(nat, even))
-        odd_nat = Apply(
-            nat,
-            Arrow(Intersection(nat, odd), nat),
-            Intersection(nat, odd))
-        self.assertTrue(st_equals_tree(
-            self.gamma.subtypes,
-            Tree(odd_nat, (
-                Tree(Combinator(odd_nat.function_type, succ)),  # 3 -> 4
-                Tree(even_odd, (
-                    Tree(Combinator(even_odd.function_type, succ)),  # 2 -> 3
-                    Tree(odd_even, (
-                        Tree(Combinator(odd_even.function_type, succ)),  # 1 -> 2
-                        Tree(even_odd, (
-                                Tree(Combinator(even_odd.function_type, succ)),  # 0 -> 1
-                                Tree(Combinator(Intersection(nat, even), 0))
-                            ))
-                        ))
-                    )),
-                )),
-            results.raw[4]
-        ))
+            Intersection(nat, even),
+        )
+        odd_nat = Apply(nat, Arrow(Intersection(nat, odd), nat), Intersection(nat, odd))
+        self.assertTrue(
+            st_equals_tree(
+                self.gamma.subtypes,
+                Tree(
+                    odd_nat,
+                    (
+                        Tree(Combinator(odd_nat.function_type, succ)),  # 3 -> 4
+                        Tree(
+                            even_odd,
+                            (
+                                Tree(
+                                    Combinator(even_odd.function_type, succ)
+                                ),  # 2 -> 3
+                                Tree(
+                                    odd_even,
+                                    (
+                                        Tree(
+                                            Combinator(odd_even.function_type, succ)
+                                        ),  # 1 -> 2
+                                        Tree(
+                                            even_odd,
+                                            (
+                                                Tree(
+                                                    Combinator(
+                                                        even_odd.function_type, succ
+                                                    )
+                                                ),  # 0 -> 1
+                                                Tree(
+                                                    Combinator(
+                                                        Intersection(nat, even), 0
+                                                    )
+                                                ),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                results.raw[4],
+            )
+        )
         self.assertEqual("Combinator(Nat, 0)", str(results.raw[0]))
-        self.assertEqual("Combinator(Nat & Even -> Nat, succ)(Combinator(Nat & Even, 0))",
-                         str(results.raw[1]))
+        self.assertEqual(
+            "Combinator(Nat & Even -> Nat, succ)(Combinator(Nat & Even, 0))",
+            str(results.raw[1]),
+        )
         self.assertEqual(
             "Combinator(Nat & Odd -> Nat, succ)(Combinator(Nat & Even -> Nat & Odd, succ)(Combinator(Nat & Even, 0)))",
-            str(results.raw[2])
+            str(results.raw[2]),
         )
 
         for x in range(0, 100):
@@ -250,7 +311,7 @@ class TestFCL(unittest.TestCase):
             Constructor("Seq", nat),
             Constructor("Seq", negative),
             Constructor("Seq", nat),
-            Constructor("Seq", integer)
+            Constructor("Seq", integer),
         )
         self.assertFalse(results)
         self.assertFalse(results.infinite)
@@ -277,7 +338,7 @@ class TestFCL(unittest.TestCase):
         self.assertTrue(results.infinite)
         self.assertLess(results.size(), 0)
         for x in range(0, 100):
-            self.assertEqual(x*2, results.evaluated[x])
+            self.assertEqual(x * 2, results.evaluated[x])
 
     def test_odd(self):
         results = self.gamma.inhabit(Intersection(nat, odd))
@@ -285,7 +346,7 @@ class TestFCL(unittest.TestCase):
         self.assertTrue(results.infinite)
         self.assertLess(results.size(), 0)
         for x in range(0, 100):
-            self.assertEqual(x*2+1, results.evaluated[x])
+            self.assertEqual(x * 2 + 1, results.evaluated[x])
 
     def test_even_odd(self):
         results = self.gamma.inhabit(Intersection(nat, even), Intersection(nat, odd))
@@ -293,7 +354,9 @@ class TestFCL(unittest.TestCase):
         self.assertTrue(results.infinite)
         self.assertLess(results.size(), 0)
 
-        even_odd = (Enumeration.ints() * Enumeration.ints()).map(lambda xy: [xy[0]*2, xy[1]*2+1])
+        even_odd = (Enumeration.ints() * Enumeration.ints()).map(
+            lambda xy: [xy[0] * 2, xy[1] * 2 + 1]
+        )
         for x in range(0, 100):
             self.assertEqual(even_odd[x], results.evaluated[x])
 
@@ -314,13 +377,14 @@ class TestFCL(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.gamma._inhabitation_step(set(), deque([deque([Failed(Omega())])]))
 
-        omega_tree = Tree(Failed(Omega()), (Tree(Failed(Omega()), ()), Tree(Failed(Omega()), ())))
+        omega_tree = Tree(
+            Failed(Omega()), (Tree(Failed(Omega()), ()), Tree(Failed(Omega()), ()))
+        )
         with self.assertRaises(TypeError):
             omega_tree.evaluate()
 
         self.assertEqual(
-            "Failed(omega) @ (Failed(omega) @ (), Failed(omega) @ ())",
-            str(omega_tree)
+            "Failed(omega) @ (Failed(omega) @ (), Failed(omega) @ ())", str(omega_tree)
         )
 
     def test_empty_step(self):
@@ -357,5 +421,5 @@ class TestFCL(unittest.TestCase):
         self.assertFalse(result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

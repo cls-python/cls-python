@@ -1,21 +1,17 @@
 import unittest
 
-from cls_python import *
+from cls_python.fcl import Apply, Combinator, FiniteCombinatoryLogic, Tree
+from cls_python.subtypes import Subtypes
+from cls_python.types import Arrow, Constructor, Intersection
 
 garbage_repo = {
-    "f": Arrow(
-        Constructor("Int"),
-        Constructor("Goal")
-    ),
+    "f": Arrow(Constructor("Int"), Constructor("Goal")),
     "x": Constructor("Int"),
     "garbage1": Arrow(
         Constructor("Garbage1"),
-        Intersection(Constructor("Int"), Constructor("Garbage2"))
+        Intersection(Constructor("Int"), Constructor("Garbage2")),
     ),
-    "garbage2": Arrow(
-        Constructor("Garbage2"),
-        Constructor("Garbage1")
-    )
+    "garbage2": Arrow(Constructor("Garbage2"), Constructor("Garbage1")),
 }
 
 
@@ -29,16 +25,17 @@ class TestPrune(unittest.TestCase):
 
         for rule in results.rules:
             self.assertTrue(
-                rule.target != Constructor("Goal") or
-                rule == Apply(
+                rule.target != Constructor("Goal")
+                or rule
+                == Apply(
                     Constructor("Goal"),
                     Arrow(Constructor("Int"), Constructor("Goal")),
-                    Constructor("Int")
+                    Constructor("Int"),
                 )
             )
             self.assertTrue(
-                rule.target != Constructor("Int") or
-                rule == Combinator(Constructor("Int"), "x")
+                rule.target != Constructor("Int")
+                or rule == Combinator(Constructor("Int"), "x")
             )
 
         self.assertEqual(1, results.size())
@@ -47,16 +44,18 @@ class TestPrune(unittest.TestCase):
                 Apply(
                     Constructor("Goal"),
                     Arrow(Constructor("Int"), Constructor("Goal")),
-                    Constructor("Int")
+                    Constructor("Int"),
                 ),
                 (
-                    Tree(Combinator(Arrow(Constructor("Int"), Constructor("Goal")), "f")),
-                    Tree(Combinator(Constructor("Int"), "x"))
-                )
+                    Tree(
+                        Combinator(Arrow(Constructor("Int"), Constructor("Goal")), "f")
+                    ),
+                    Tree(Combinator(Constructor("Int"), "x")),
+                ),
             ),
-            results.raw[0]
+            results.raw[0],
         )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

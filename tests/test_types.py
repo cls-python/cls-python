@@ -1,32 +1,33 @@
 import unittest
 
-from cls_python import *
+from cls_python.types import Arrow, Constructor, Intersection, Omega, Product, Type
 
 a = Constructor("a")
 b = Constructor("b")
 c = Constructor("c")
 
-complicated = Type.intersect([
-    Intersection(a, b),
-    c,
-    Arrow(Intersection(a, c), b),
-    Arrow(a, Intersection(c, b)),
-    Product(Intersection(a, b), c),
-    Product(a, Intersection(b, c)),
-    Product(a, Product(b, c)),
-    Product(Product(a, b), c),
-    Arrow(Arrow(a, b), Arrow(c, a)),
-    Constructor("List", a),
-    Omega()
-])
+complicated = Type.intersect(
+    [
+        Intersection(a, b),
+        c,
+        Arrow(Intersection(a, c), b),
+        Arrow(a, Intersection(c, b)),
+        Product(Intersection(a, b), c),
+        Product(a, Intersection(b, c)),
+        Product(a, Product(b, c)),
+        Product(Product(a, b), c),
+        Arrow(Arrow(a, b), Arrow(c, a)),
+        Constructor("List", a),
+        Omega(),
+    ]
+)
 
 
 class TestTypes(unittest.TestCase):
-
     def test_pretty_print(self):
         self.assertEqual(
             str(complicated),
-            "a & b & c & (a & c -> b) & (a -> c & b) & (a & b * c) & (a * b & c) & (a * (b * c)) & (a * b * c) & ((a -> b) -> c -> a) & List(a) & omega"
+            "a & b & c & (a & c -> b) & (a -> c & b) & (a & b * c) & (a * b & c) & (a * (b * c)) & (a * b * c) & ((a -> b) -> c -> a) & List(a) & omega",
         )
 
     def test_mul(self):
@@ -41,5 +42,5 @@ class TestTypes(unittest.TestCase):
         self.assertEqual(s1, s2)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
