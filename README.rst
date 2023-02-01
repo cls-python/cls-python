@@ -47,3 +47,5 @@ Features
 Credits
 -------
 Jan Bessai
+Constantin Chaumet
+Anne Meyer
