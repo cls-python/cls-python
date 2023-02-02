@@ -12,6 +12,15 @@ jobs:
         steps:
             - name: Checkout repository content
               uses: actions/checkout@v3
+            - name: Install dependencies
+              run: |
+                  python -m pip install --upgrade pip
+                  python -m pip install sphinx
+            - name: Make Dist
+              run: |
+                  rm -f docs/cls_python.rst
+                  rm -f docs/modules.rst
+                  sphinx-apidoc -o docs/ cls_python -P
             - name: Make the docs
               uses: ammaraskar/sphinx-action@master
               with:
