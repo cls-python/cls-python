@@ -45,4 +45,8 @@ Features
 * Flexible JSON Import/Export
 
 
-.. include:: docs/authors.rst
+Credits
+-------
+* Jan Bessai <jan.bessai@tu-dortmund.de>
+* Constantin Chaumet <constantin.chaumet@tu-dortmund.de>
+* Anne Meyer <anne2.meyer@tu-dortmund.de>
