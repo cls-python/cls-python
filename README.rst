@@ -12,6 +12,9 @@ CLS-Python
 .. image:: https://github.com/cls-python/cls-python/actions/workflows/build-docs.yaml/badge.svg
         :target: https://github.com/cls-python/cls-python/actions/workflows/build-docs.yaml
 
+.. image:: https://github.com/cls-python/cls-python/actions/workflows/run-tests.yaml/badge.svg
+        :target: https://github.com/cls-python/cls-python/actions/workflows/run-tests.yaml
+
 .. image:: https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/Jekannadar/bc966a7d659af93f31be6b04415b9468/raw/covbadge.json
         :target: https://github.com/cls-python/cls-python/actions/workflows/run-tests.yaml
 
