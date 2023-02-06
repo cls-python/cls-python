@@ -32,13 +32,13 @@ You can either clone the public repository:
 
 .. code-block:: console
 
-    $ git clone git://github.com/Jekannadar/cls_python
+    $ git clone https://github.com/cls-python/cls-python.git
 
 Or download the `tarball`_:
 
 .. code-block:: console
 
-    $ curl -OJL https://github.com/Jekannadar/cls_python/tarball/master
+    $ curl -OJL https://github.com/cls-python/cls_python/tarball/master
 
 Once you have a copy of the source, you can install it with:
 
@@ -47,5 +47,5 @@ Once you have a copy of the source, you can install it with:
     $ python setup.py install
 
 
-.. _Github repo: https://github.com/Jekannadar/cls_python
-.. _tarball: https://github.com/Jekannadar/cls_python/tarball/master
+.. _Github repo: https://github.com/cls-python/cls-python
+.. _tarball: https://github.com/cls-python/cls_python/tarball/master

@@ -5,9 +5,10 @@ Credits
 Development Lead
 ----------------
 
-* cls-python <maintainers@cls-python.org>
+* Jan Bessai <jan.bessai@tu-dortmund.de>
 
 Contributors
 ------------
 
-None yet. Why not be the first?
+* Constantin Chaumet <constantin.chaumet@tu-dortmund.de>
+* Anne Meyer <anne2.meyer@tu-dortmund.de>

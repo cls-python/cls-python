@@ -17,20 +17,20 @@ test_requirements = [
 ]
 
 setup(
-    author="cls-python",
-    author_email="maintainer@cls-python.org ",
+    author="Jan Bessai",
+    author_email="jan.bessai@tu-dortmund.de",
     python_requires=">=3.10",
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",
-        "License :: OSI Approved :: Apache Software License",
+        "License :: OSI Approved :: Apache Software License 2.0",
         "Natural Language :: English",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.10",
     ],
-    description="Python implementation of the cls framework. ",
+    description="Python implementation of the cls framework.",
     install_requires=requirements,
-    license="TODO",
+    license="Apache Software License 2.0",
     long_description=readme + "\n\n" + history,
     include_package_data=True,
     keywords="cls_python",
@@ -38,7 +38,7 @@ setup(
     packages=find_packages(include=["cls_python", "cls_python.*"]),
     test_suite="tests",
     tests_require=test_requirements,
-    url="https://github.com/Jekannadar/cls_python",
+    url="https://github.com/cls-python/cls-python",
     version="0.1.0",
     zip_safe=False,
 )
