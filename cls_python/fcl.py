@@ -19,12 +19,28 @@ CoverMachineInstruction: TypeAlias = Callable[
 
 @dataclass(frozen=True)
 class Rule(ABC):
+    """Abstract base class for rules.
+
+    A `Rule` is an abstract representation of a specific aspect of a type in a type system. It has two attributes:
+
+    :param Type target: The target type the rule applies to.
+    :param bool is_combinator: Whether the rule is a combinator.
+    """
+
     target: Type = field(init=True, kw_only=True)
     is_combinator: bool = field(init=True, kw_only=True)
 
 
 @dataclass(frozen=True)
 class Failed(Rule):
+    """A representation of a failed rule.
+
+    A `Failed` rule represents a situation in which the application of the rule has failed.
+
+    :param Type target: The target type the rule failed to apply to.
+    :param bool is_combinator: indicates if this is a combinator.
+    """
+
     target: Type = field()
     is_combinator: bool = field(default=False, init=False)
 
@@ -34,6 +50,15 @@ class Failed(Rule):
 
 @dataclass(frozen=True)
 class Combinator(Rule):
+    """A representation of a combinator rule.
+
+    A `Combinator` has two attributes:
+
+    :param Type target: The target type.
+    :param bool is_combinator: indicates if this is a combinator.
+    :param object combinator: The combinator.
+    """
+
     target: Type = field()
     is_combinator: bool = field(default=True, init=False)
     combinator: object = field(init=True)
@@ -44,6 +69,13 @@ class Combinator(Rule):
 
 @dataclass(frozen=True)
 class Apply(Rule):
+    """The `Apply` class represents a type inference rule that applies a function to its argument.
+
+    :param Type target: The resulting type after applying the function.
+    :param Type function_type: The type of the function being applied.
+    :param Type argument_type: The type of the argument being passed to the function.
+    """
+
     target: Type = field()
     is_combinator: bool = field(default=False, init=False)
     function_type: Type = field(init=True)
@@ -57,15 +89,30 @@ class Apply(Rule):
 
 @dataclass(frozen=True)
 class Tree:
+    """A class representing a tree of type rules.
+
+    :param Rule rule: The root rule of the tree.
+    :param tuple children: The children of the tree, represented as a tuple of Tree objects. Default value is an empty tuple.
+    """
+
     rule: Rule = field(init=True)
     children: tuple["Tree", ...] = field(init=True, default_factory=lambda: ())
 
     class Evaluator(ComputationStep):
+        """The `Evaluator` class implements a computation step that evaluates a `Tree` instance.
+
+        :param Tree outer: The `Tree` instance being evaluated.
+        :param list results: A list to store the result of the evaluation.
+        """
+
         def __init__(self, outer: "Tree", results: list[Any]):
             self.outer: "Tree" = outer
             self.results = results
 
         def __iter__(self) -> Iterator[ComputationStep]:
+            """
+            Yields the next computation step to be performed.
+            """
             match self.outer.rule:
                 case Combinator(_, c):
                     self.results.append(c)
@@ -79,11 +126,17 @@ class Tree:
             yield EmptyStep()
 
     def evaluate(self) -> Any:
+        """
+        Evaluates the `Tree` instance and returns the result.
+        """
         result: list[Any] = []
         self.Evaluator(self, result).run()
         return result[0]
 
     def __str__(self):
+        """
+        Returns a string representation of the `Tree` instance.
+        """
         match self.rule:
             case Combinator(_, _):
                 return str(self.rule)
@@ -95,6 +148,31 @@ class Tree:
 
 @dataclass(frozen=True)
 class InhabitationResult:
+    """The `InhabitationResult` class is used to represent the inhabitation result, which is a process of finding terms that have a specific type. It stores a list of `Type` objects (`targets`) and a set of `Rule` objects (`rules`) that define the types and the terms.
+
+    The class provides several properties and methods to work with the result.
+
+    The `grouped_rules` property is a cached property that groups the rules based on their target type. It returns a dictionary where the keys are the target types, and the values are the sets of rules that have the same target type.
+
+    The `check_empty` method takes a `Type` object as an argument and returns `True` if there are no terms with the type, and `False` otherwise. It uses the `grouped_rules` property to check if there are any `Failed` rules for the target type.
+
+    The `non_empty` property returns `True` if there are any terms for the target types, and `False` otherwise.
+
+    The `infinite` property returns `True` if the result is infinite, meaning that the terms with the target types can generate more terms of the same type.
+
+    The `size` method returns the size of the result. If the result is infinite, it returns -1. Otherwise, it returns the number of terms that have the target types.
+
+    The `__getitem__` method is used to access the terms of a specific type. It takes a `Type` object as an argument and returns an `Enumeration` object that contains the terms.
+
+    The `combinator_result` and `apply_result` methods are static methods that are used to create `Enumeration` objects for `Combinator` and `Apply` rules, respectively.
+
+    The `enumeration_map` property is a cached property that returns a dictionary where the keys are the target types, and the values are the `Enumeration` objects that contain the terms of the specific types.
+
+    The `raw` property is a cached property that returns an `Enumeration` object that contains either a `Tree` or a list of `Tree` objects. The terms are either single terms or lists of terms.
+
+    The `evaluated`property is a cached property that returns the evaluated result of the raw targets. If the number of targets is 1, the raw target is evaluated and returned as a single value. Otherwise, the raw targets are evaluated and returned as a list of values.
+    """
+
     targets: list[Type] = field(init=True)
     rules: set[Rule] = field(init=True)
 
@@ -240,6 +318,19 @@ class InhabitationResult:
 
 
 class FiniteCombinatoryLogic:
+    """A class to represent finite combinatory logic.
+
+    repository : dict[object, Type]
+        The repository of objects and their respective types.
+
+    subtypes : Subtypes
+        The subtypes of the objects in the repository.
+
+    processes : int, optional
+        The number of processes to use when splitting the repository.
+        Defaults to the number of CPU cores.
+    """
+
     def __init__(
         self,
         repository: dict[object, Type],

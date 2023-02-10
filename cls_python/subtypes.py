@@ -9,7 +9,17 @@ SubtypeInstruction: TypeAlias = Callable[
 
 
 class Subtypes:
+    """The `Subtypes` class performs subtype checking and casting in a type environment.
+
+    :param environment: A dictionary mapping objects to sets of objects.
+    :type environment: dict[object, set]
+    """
+
     def __init__(self, environment: dict[object, set]):
+        """Initialize the `Subtypes` class.
+
+        The `environment` argument is used to initialize the `environment` instance variable.
+        """
         self.environment = self._transitive_closure(
             self._reflexive_closure(environment)
         )
@@ -17,11 +27,29 @@ class Subtypes:
     def _tgt_for_srcs(
         self, gte: Type, inseq: Sequence[tuple[Type, Type]]
     ) -> Iterator[Type]:
+        """Generator for targets for a given source.
+
+        :param gte: A type to use for the comparison.
+        :type gte: Type
+        :param inseq: A sequence of tuples of types.
+        :type inseq: Sequence[tuple[Type, Type]]
+        :return: An iterator of types.
+        :rtype: Iterator[Type]
+        """
         for src, tgt in inseq:
             if self.check_subtype(gte, src):
                 yield tgt
 
     def check_subtype(self, subtype: Type, supertype: Type) -> bool:
+        """Check if `subtype` is a subtype of `supertype`.
+
+        :param subtype: The subtype to check.
+        :type subtype: Type
+        :param supertype: The supertype to check.
+        :type supertype: Type
+        :return: True if `subtype` is a subtype of `supertype`, False otherwise.
+        :rtype: bool
+        """
         match supertype:
             case Omega():
                 return True
@@ -54,6 +82,16 @@ class Subtypes:
                 raise TypeError(f"Unsupported type: {supertype}")
 
     def cast(self, to: Type, castee: Type) -> Sequence:
+        """Cast the given type `castee` to the type `to`.
+
+        :param to: The target type to cast `castee` to.
+        :type to: Type
+        :param castee: The type to be cast.
+        :type castee: Type
+        :return: A sequence of pairs of types, representing the casting path from `castee` to `to`.
+        :rtype: Sequence
+        :raise TypeError: If `to` is unsupported.
+        """
         match to:
             case Omega():
                 return [to]
@@ -102,6 +140,13 @@ class Subtypes:
 
     @staticmethod
     def _reflexive_closure(env: dict[object, set]) -> dict[object, set]:
+        """Compute the reflexive closure of a given subtype environment.
+
+        :param env: The input subtype environment.
+        :type env: dict[object, set]
+        :return: The reflexive closure of the input subtype environment.
+        :rtype: dict[object, set]
+        """
         all_types: set[object] = set(env.keys())
         for v in env.values():
             all_types.update(v)
@@ -112,6 +157,13 @@ class Subtypes:
 
     @staticmethod
     def _transitive_closure(env: dict[object, set]) -> dict[object, set]:
+        """Compute the transitive closure of a given subtype environment.
+
+        :param env: The input subtype environment.
+        :type env: dict[object, set]
+        :return: The transitive closure of the input subtype environment.
+        :rtype: dict[object, set]
+        """
         result: dict[object, set] = {
             subtype: supertypes.copy() for (subtype, supertypes) in env.items()
         }
@@ -133,6 +185,13 @@ class Subtypes:
         return result
 
     def minimize(self, tys: set[Type]) -> set[Type]:
+        """Minimize a set of types.
+
+        :param tys: The set of types to be minimized.
+        :type tys: set[Type]
+        :return: The minimized set of types.
+        :rtype: set[Type]
+        """
         result: set[Type] = set()
         for ty in tys:
             if all(map(lambda ot: not self.check_subtype(ot, ty), result)):
