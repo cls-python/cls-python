@@ -151,26 +151,6 @@ class InhabitationResult:
     """The `InhabitationResult` class is used to represent the inhabitation result, which is a process of finding terms that have a specific type. It stores a list of `Type` objects (`targets`) and a set of `Rule` objects (`rules`) that define the types and the terms.
 
     The class provides several properties and methods to work with the result.
-
-    The `grouped_rules` property is a cached property that groups the rules based on their target type. It returns a dictionary where the keys are the target types, and the values are the sets of rules that have the same target type.
-
-    The `check_empty` method takes a `Type` object as an argument and returns `True` if there are no terms with the type, and `False` otherwise. It uses the `grouped_rules` property to check if there are any `Failed` rules for the target type.
-
-    The `non_empty` property returns `True` if there are any terms for the target types, and `False` otherwise.
-
-    The `infinite` property returns `True` if the result is infinite, meaning that the terms with the target types can generate more terms of the same type.
-
-    The `size` method returns the size of the result. If the result is infinite, it returns -1. Otherwise, it returns the number of terms that have the target types.
-
-    The `__getitem__` method is used to access the terms of a specific type. It takes a `Type` object as an argument and returns an `Enumeration` object that contains the terms.
-
-    The `combinator_result` and `apply_result` methods are static methods that are used to create `Enumeration` objects for `Combinator` and `Apply` rules, respectively.
-
-    The `enumeration_map` property is a cached property that returns a dictionary where the keys are the target types, and the values are the `Enumeration` objects that contain the terms of the specific types.
-
-    The `raw` property is a cached property that returns an `Enumeration` object that contains either a `Tree` or a list of `Tree` objects. The terms are either single terms or lists of terms.
-
-    The `evaluated`property is a cached property that returns the evaluated result of the raw targets. If the number of targets is 1, the raw target is evaluated and returned as a single value. Otherwise, the raw targets are evaluated and returned as a list of values.
     """
 
     targets: list[Type] = field(init=True)
@@ -178,6 +158,12 @@ class InhabitationResult:
 
     @cached_property
     def grouped_rules(self) -> dict[Type, set[Rule]]:
+        """The `grouped_rules` property is a cached property that groups the rules based on their target type.
+
+        :return: It returns a dictionary where the keys are the target types, and the values are the sets of rules
+        that have the same target type.
+        :rtype: dict[Type, set[Rule]]
+        """
         result: dict[Type, set[Rule]] = dict()
         for rule in self.rules:
             group: set[Rule] = result.get(rule.target)
@@ -188,6 +174,13 @@ class InhabitationResult:
         return result
 
     def check_empty(self, target: Type) -> bool:
+        """The `check_empty` method checks if a target type is in the inhabitation result.
+
+        :param target: is the target to check.
+        :type target: Type
+        :return: `True` if there are no terms with the type, and `False` otherwise.
+        :rtype: bool
+        """
         for rule in self.grouped_rules.get(target, {Failed(target)}):
             if isinstance(rule, Failed):
                 return True
@@ -195,6 +188,11 @@ class InhabitationResult:
 
     @cached_property
     def non_empty(self) -> bool:
+        """This property shows if the inhabitation result has solutions for the targets.
+
+        :return: `True` if there are any terms for the targets types, and `False` otherwise.
+        :rtype: bool
+        """
         for target in self.targets:
             if self.check_empty(target):
                 return False
@@ -205,6 +203,11 @@ class InhabitationResult:
 
     @cached_property
     def infinite(self) -> bool:
+        """This property signals whether the result is infinite.
+
+        :return: `True` if the result is infinite, meaning that the terms with the target types can generate more terms of the same type, and `False` otherwise.
+        :rtype: bool
+        """
         if not self:
             return False
 
@@ -246,6 +249,11 @@ class InhabitationResult:
         return False
 
     def size(self) -> int:
+        """The `size` method returns the size of the result.
+
+        :return: If the result is infinite, it returns -1. Otherwise, it returns the number of terms that have the target types.
+        :rtype: int
+        """
         if self.infinite:
             return -1
         maximum = self.raw.unsafe_max_size()
@@ -257,6 +265,15 @@ class InhabitationResult:
         return size
 
     def __getitem__(self, target: Type) -> Enumeration[Tree]:
+        """The `__getitem__` method is used to access the trees of type rules for a specific target type.
+        It takes a `Type` object as an argument and returns an `Enumeration` object that contains trees of type rules.
+
+
+        :param target: the target you want to access terms in the result.
+        :type target: Type
+        :return: a enumeration of type rule trees.
+        :rtype: Enumeration[Tree]
+        """
         if target in self.enumeration_map:
             return self.enumeration_map[target]
         else:
@@ -264,12 +281,15 @@ class InhabitationResult:
 
     @staticmethod
     def combinator_result(r: Combinator) -> Enumeration[Tree]:
+        """The `combinator_result` method is a static methods that is used to create `Enumeration` objects for `Combinator` rules."""
         return Enumeration.singleton(Tree(r, ()))
 
     @staticmethod
     def apply_result(
         result: dict[Type, Enumeration[Tree]], r: Apply
     ) -> Enumeration[Tree]:
+        """The `apply_result` method is a static methods that is used to create `Enumeration` objects for `Apply` rules."""
+
         def mkapp(left_and_right):
             return Tree(r, (left_and_right[0], left_and_right[1]))
 
@@ -281,6 +301,12 @@ class InhabitationResult:
 
     @cached_property
     def enumeration_map(self) -> dict[Type, Enumeration[Tree]]:
+        """The `enumeration_map` property is a cached property that returns a dictionary where the keys are the target types,
+        and the values are the `Enumeration` objects that contain the terms of the specific types.
+
+        :return: a dictionary.
+        :rtype: dict[Type, Enumeration[Tree]]
+        """
         result: dict[Type, Enumeration[Tree]] = dict()
         for (target, rules) in self.grouped_rules.items():
             _enum: Enumeration[Tree] = Enumeration.empty()
@@ -297,6 +323,12 @@ class InhabitationResult:
 
     @cached_property
     def raw(self) -> Enumeration[Tree | list[Tree]]:
+        """The `raw` property is a cached property that returns an `Enumeration` object
+        that contains either a `Tree` or a list of `Tree` objects. The terms are either single terms or lists of terms.
+
+        :return: Enumeration of resulting terms.
+        :rtype: Enumeration[Tree | list[Tree]]
+        """
         if not self:
             return Enumeration.empty()
         if len(self.targets) == 1:
@@ -311,6 +343,12 @@ class InhabitationResult:
 
     @cached_property
     def evaluated(self) -> Enumeration[Any | list[Any]]:
+        """The `evaluated`property is a cached property that returns the evaluated result of the raw targets.
+
+        :return: If the number of targets is 1, the raw target is evaluated and returned as a single value.
+        Otherwise, the raw targets are evaluated and returned as a list of values.
+        :rtype: Enumeration[Any | list[Any]]
+        """
         if len(self.targets) == 1:
             return self.raw.map(lambda t: t.evaluate())
         else:
