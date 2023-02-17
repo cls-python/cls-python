@@ -2,14 +2,20 @@
 History
 =======
 
-0.3.0 (2023-02-17)
+0.1.3 (2023-02-17)
+------------------
+
+* Fix readme link to new gh-page.
+
+
+0.1.2 (2023-02-17)
 ------------------
 
 * Update CI to include build and deploy of gh-page.
 * New badges for README.
 
 
-0.2.0 (2023-02-17)
+0.1.1 (2023-02-17)
 ------------------
 
 * Update CI.

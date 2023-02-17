@@ -21,8 +21,8 @@ CLS-Python
 .. image:: https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/Jekannadar/bc966a7d659af93f31be6b04415b9468/raw/covbadge.json
         :target: https://github.com/cls-python/cls-python/actions/workflows/run-tests.yaml
 
-.. image:: https://readthedocs.org/projects/cls-python/badge/?version=latest
-        :target: https://cls.readthedocs.io/en/latest/?version=latest
+.. image:: https://img.shields.io/badge/docs-online-green
+        :target: https://cls-python.github.io/cls-python/readme.html
         :alt: Documentation Status
 ..
   .. image:: https://pyup.io/repos/github/cls-python/cls-python/shield.svg
@@ -38,7 +38,7 @@ Implements the cls-framework in python, as presented and verified in the dissert
 
 
 * Free software: Apache Software License 2.0
-* Documentation: https://cls-python.readthedocs.io.
+* Documentation: https://cls-python.github.io/cls-python/readme.html.
 
 
 Features
