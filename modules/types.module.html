@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>types module &mdash; cls-python 0.1.2 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Contributing" href="../contributing.html" />
+    <link rel="prev" title="subtypes module" href="subtypes.module.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> cls-python
+          </a>
+              <div class="version">
+                0.1.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">CLS-Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Module: cls-python</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../modules.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="cls_json.module.html">cls_json module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="debug_util.module.html">debug_util module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="enumeration.module.html">enumeration module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fcl.module.html">fcl module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="subtypes.module.html">subtypes module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">types module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cls.types.Arrow"><code class="docutils literal notranslate"><span class="pre">Arrow</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cls.types.Constructor"><code class="docutils literal notranslate"><span class="pre">Constructor</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cls.types.Intersection"><code class="docutils literal notranslate"><span class="pre">Intersection</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cls.types.Omega"><code class="docutils literal notranslate"><span class="pre">Omega</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cls.types.Product"><code class="docutils literal notranslate"><span class="pre">Product</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cls.types.Type"><code class="docutils literal notranslate"><span class="pre">Type</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../history.html">History</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">cls-python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../modules.html">Module: cls-python</a> &raquo;</li>
+      <li>types module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/types.module.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-cls.types">
+<span id="types-module"></span><h1>types module<a class="headerlink" href="#module-cls.types" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="cls.types.Arrow">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cls.types.</span></span><span class="sig-name descname"><span class="pre">Arrow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><span class="pre">Type</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><span class="pre">Type</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cls/types.html#Arrow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Arrow" title="Permalink to this definition"></a></dt>
+<dd><p>The <cite>Arrow</cite> class represents the type of a function from a source type to a target type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> (<a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><em>Type</em></a>) – The source type.</p></li>
+<li><p><strong>target</strong> (<a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><em>Type</em></a>) – The target type.</p></li>
+<li><p><strong>is_omega</strong> (<em>bool</em>) – Indicates whether this type is omega.</p></li>
+<li><p><strong>size</strong> (<em>int</em>) – The size of this type.</p></li>
+<li><p><strong>organized</strong> (<em>set</em><em>[</em><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><em>Type</em></a><em>]</em>) – The organized forms of this type.</p></li>
+<li><p><strong>path</strong> (<em>tuple</em><em>[</em><em>list</em><em>[</em><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><em>Type</em></a><em>]</em><em>, </em><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><em>Type</em></a><em>] </em><em>| </em><em>None</em>) – The path to the root of the organized forms of this type.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Arrow._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#cls.types.Arrow._abc_impl" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Arrow._is_omega">
+<span class="sig-name descname"><span class="pre">_is_omega</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/cls/types.html#Arrow._is_omega"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Arrow._is_omega" title="Permalink to this definition"></a></dt>
+<dd><p>Return a flag indicating whether the type is omega.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A flag indicating whether the type is omega.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Arrow._organized">
+<span class="sig-name descname"><span class="pre">_organized</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/cls/types.html#Arrow._organized"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Arrow._organized" title="Permalink to this definition"></a></dt>
+<dd><p>Return the set of types that the type is organized into.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The set of types that the type is organized into.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>set</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Arrow._path">
+<span class="sig-name descname"><span class="pre">_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/cls/types.html#Arrow._path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Arrow._path" title="Permalink to this definition"></a></dt>
+<dd><p>Return the path to the type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The path to the type, represented as a list of types and the type itself.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Arrow._size">
+<span class="sig-name descname"><span class="pre">_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/cls/types.html#Arrow._size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Arrow._size" title="Permalink to this definition"></a></dt>
+<dd><p>Return the size of the type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The size of the type.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Arrow._str_prec">
+<span class="sig-name descname"><span class="pre">_str_prec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/cls/types.html#Arrow._str_prec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Arrow._str_prec" title="Permalink to this definition"></a></dt>
+<dd><p>Return a string representation of the type with a given precedence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>prec</strong> (<em>int</em>) – The precedence to use when generating the string representation.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The string representation of the type with the given precedence.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Arrow.is_omega">
+<span class="sig-name descname"><span class="pre">is_omega</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#cls.types.Arrow.is_omega" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Arrow.organized">
+<span class="sig-name descname"><span class="pre">organized</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><span class="pre">cls.types.Type</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#cls.types.Arrow.organized" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Arrow.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#cls.types.Arrow.path" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Arrow.size">
+<span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#cls.types.Arrow.size" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Arrow.source">
+<span class="sig-name descname"><span class="pre">source</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><span class="pre">Type</span></a></em><a class="headerlink" href="#cls.types.Arrow.source" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Arrow.target">
+<span class="sig-name descname"><span class="pre">target</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><span class="pre">Type</span></a></em><a class="headerlink" href="#cls.types.Arrow.target" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cls.types.Constructor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cls.types.</span></span><span class="sig-name descname"><span class="pre">Constructor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><span class="pre">Type</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Omega(is_omega=True,</span> <span class="pre">size=1,</span> <span class="pre">organized=set(),</span> <span class="pre">path=None)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cls/types.html#Constructor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Constructor" title="Permalink to this definition"></a></dt>
+<dd><p>A type constructor that is used to build more complex types.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>object</em>) – The name of the constructor.</p></li>
+<li><p><strong>arg</strong> (<a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><em>Type</em></a>) – The argument of the constructor.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>is_omega</strong> – Indicates whether the type is an <cite>Omega</cite> type.</p></li>
+<li><p><strong>size</strong> – The size of the type.</p></li>
+<li><p><strong>organized</strong> – A set of <a href="#id1"><span class="problematic" id="id2">`</span></a>Type`s that are organized in this type.</p></li>
+<li><p><strong>path</strong> – A tuple representing the path to a <cite>Type</cite> in this type.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Constructor._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#cls.types.Constructor._abc_impl" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Constructor._is_omega">
+<span class="sig-name descname"><span class="pre">_is_omega</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/cls/types.html#Constructor._is_omega"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Constructor._is_omega" title="Permalink to this definition"></a></dt>
+<dd><p>Return a flag indicating whether the type is omega.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A flag indicating whether the type is omega.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Constructor._organized">
+<span class="sig-name descname"><span class="pre">_organized</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/cls/types.html#Constructor._organized"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Constructor._organized" title="Permalink to this definition"></a></dt>
+<dd><p>Return the set of types that the type is organized into.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The set of types that the type is organized into.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>set</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Constructor._path">
+<span class="sig-name descname"><span class="pre">_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/cls/types.html#Constructor._path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Constructor._path" title="Permalink to this definition"></a></dt>
+<dd><p>Return the path to the type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The path to the type, represented as a list of types and the type itself.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Constructor._size">
+<span class="sig-name descname"><span class="pre">_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/cls/types.html#Constructor._size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Constructor._size" title="Permalink to this definition"></a></dt>
+<dd><p>Return the size of the type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The size of the type.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Constructor._str_prec">
+<span class="sig-name descname"><span class="pre">_str_prec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/cls/types.html#Constructor._str_prec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Constructor._str_prec" title="Permalink to this definition"></a></dt>
+<dd><p>Return a string representation of the type with a given precedence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>prec</strong> (<em>int</em>) – The precedence to use when generating the string representation.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The string representation of the type with the given precedence.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Constructor.arg">
+<span class="sig-name descname"><span class="pre">arg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><span class="pre">Type</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Omega(is_omega=True,</span> <span class="pre">size=1,</span> <span class="pre">organized=set(),</span> <span class="pre">path=None)</span></em><a class="headerlink" href="#cls.types.Constructor.arg" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Constructor.is_omega">
+<span class="sig-name descname"><span class="pre">is_omega</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#cls.types.Constructor.is_omega" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Constructor.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">object</span></em><a class="headerlink" href="#cls.types.Constructor.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Constructor.organized">
+<span class="sig-name descname"><span class="pre">organized</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><span class="pre">cls.types.Type</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#cls.types.Constructor.organized" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Constructor.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#cls.types.Constructor.path" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Constructor.size">
+<span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#cls.types.Constructor.size" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cls.types.Intersection">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cls.types.</span></span><span class="sig-name descname"><span class="pre">Intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><span class="pre">Type</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><span class="pre">Type</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cls/types.html#Intersection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Intersection" title="Permalink to this definition"></a></dt>
+<dd><p>A type representing the intersection of two other types.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> (<a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><em>Type</em></a>) – The left type in the intersection.</p></li>
+<li><p><strong>right</strong> (<a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><em>Type</em></a>) – The right type in the intersection.</p></li>
+<li><p><strong>is_omega</strong> (<em>bool</em>) – Indicates if both <cite>left</cite> and <cite>right</cite> are equal to omega.</p></li>
+<li><p><strong>size</strong> (<em>int</em>) – The number of distinct primitive types in the intersection.</p></li>
+<li><p><strong>organized</strong> (<em>set</em><em>[</em><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><em>Type</em></a><em>]</em>) – A set of primitive types in the intersection.</p></li>
+<li><p><strong>path</strong> (<em>tuple</em><em>[</em><em>list</em><em>[</em><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><em>Type</em></a><em>]</em><em>, </em><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><em>Type</em></a><em>] </em><em>| </em><em>None</em>) – A path to the root of the intersection, or None if there is no such path.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Intersection._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#cls.types.Intersection._abc_impl" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Intersection._is_omega">
+<span class="sig-name descname"><span class="pre">_is_omega</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/cls/types.html#Intersection._is_omega"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Intersection._is_omega" title="Permalink to this definition"></a></dt>
+<dd><p>Return a flag indicating whether the type is omega.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A flag indicating whether the type is omega.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Intersection._organized">
+<span class="sig-name descname"><span class="pre">_organized</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/cls/types.html#Intersection._organized"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Intersection._organized" title="Permalink to this definition"></a></dt>
+<dd><p>Return the set of types that the type is organized into.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The set of types that the type is organized into.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>set</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Intersection._path">
+<span class="sig-name descname"><span class="pre">_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/cls/types.html#Intersection._path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Intersection._path" title="Permalink to this definition"></a></dt>
+<dd><p>Return the path to the type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The path to the type, represented as a list of types and the type itself.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Intersection._size">
+<span class="sig-name descname"><span class="pre">_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/cls/types.html#Intersection._size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Intersection._size" title="Permalink to this definition"></a></dt>
+<dd><p>Return the size of the type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The size of the type.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Intersection._str_prec">
+<span class="sig-name descname"><span class="pre">_str_prec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/cls/types.html#Intersection._str_prec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Intersection._str_prec" title="Permalink to this definition"></a></dt>
+<dd><p>Return a string representation of the type with a given precedence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>prec</strong> (<em>int</em>) – The precedence to use when generating the string representation.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The string representation of the type with the given precedence.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Intersection.is_omega">
+<span class="sig-name descname"><span class="pre">is_omega</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#cls.types.Intersection.is_omega" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Intersection.left">
+<span class="sig-name descname"><span class="pre">left</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><span class="pre">Type</span></a></em><a class="headerlink" href="#cls.types.Intersection.left" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Intersection.organized">
+<span class="sig-name descname"><span class="pre">organized</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><span class="pre">cls.types.Type</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#cls.types.Intersection.organized" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Intersection.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#cls.types.Intersection.path" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Intersection.right">
+<span class="sig-name descname"><span class="pre">right</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><span class="pre">Type</span></a></em><a class="headerlink" href="#cls.types.Intersection.right" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Intersection.size">
+<span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#cls.types.Intersection.size" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cls.types.Omega">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cls.types.</span></span><span class="sig-name descname"><span class="pre">Omega</span></span><a class="reference internal" href="../_modules/cls/types.html#Omega"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Omega" title="Permalink to this definition"></a></dt>
+<dd><p>Represents the omega type in type theory. This class extends the abstract class <cite>Type</cite>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Omega._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#cls.types.Omega._abc_impl" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Omega._is_omega">
+<span class="sig-name descname"><span class="pre">_is_omega</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/cls/types.html#Omega._is_omega"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Omega._is_omega" title="Permalink to this definition"></a></dt>
+<dd><p>Return a flag indicating whether the type is omega.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A flag indicating whether the type is omega.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Omega._organized">
+<span class="sig-name descname"><span class="pre">_organized</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/cls/types.html#Omega._organized"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Omega._organized" title="Permalink to this definition"></a></dt>
+<dd><p>Return the set of types that the type is organized into.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The set of types that the type is organized into.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>set</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Omega._path">
+<span class="sig-name descname"><span class="pre">_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/cls/types.html#Omega._path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Omega._path" title="Permalink to this definition"></a></dt>
+<dd><p>Return the path to the type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The path to the type, represented as a list of types and the type itself.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Omega._size">
+<span class="sig-name descname"><span class="pre">_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/cls/types.html#Omega._size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Omega._size" title="Permalink to this definition"></a></dt>
+<dd><p>Return the size of the type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The size of the type.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Omega._str_prec">
+<span class="sig-name descname"><span class="pre">_str_prec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/cls/types.html#Omega._str_prec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Omega._str_prec" title="Permalink to this definition"></a></dt>
+<dd><p>Return a string representation of the type with a given precedence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>prec</strong> (<em>int</em>) – The precedence to use when generating the string representation.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The string representation of the type with the given precedence.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Omega.is_omega">
+<span class="sig-name descname"><span class="pre">is_omega</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#cls.types.Omega.is_omega" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Omega.organized">
+<span class="sig-name descname"><span class="pre">organized</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><span class="pre">cls.types.Type</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#cls.types.Omega.organized" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Omega.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#cls.types.Omega.path" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Omega.size">
+<span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#cls.types.Omega.size" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cls.types.Product">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cls.types.</span></span><span class="sig-name descname"><span class="pre">Product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><span class="pre">Type</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><span class="pre">Type</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cls/types.html#Product"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Product" title="Permalink to this definition"></a></dt>
+<dd><p>Class representing the product type in the type theory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> (<a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><em>Type</em></a>) – The left-hand side type.</p></li>
+<li><p><strong>right</strong> (<a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><em>Type</em></a>) – The right-hand side type.</p></li>
+<li><p><strong>is_omega</strong> (<em>bool</em>) – Indicates whether this type is omega.</p></li>
+<li><p><strong>size</strong> (<em>int</em>) – The size of this type.</p></li>
+<li><p><strong>organized</strong> (<em>set</em><em>[</em><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><em>Type</em></a><em>]</em>) – The organized forms of this type.</p></li>
+<li><p><strong>path</strong> (<em>tuple</em><em>[</em><em>list</em><em>[</em><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><em>Type</em></a><em>]</em><em>, </em><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><em>Type</em></a><em>] </em><em>| </em><em>None</em>) – The path to the root of the organized forms of this type.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Product._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#cls.types.Product._abc_impl" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Product._is_omega">
+<span class="sig-name descname"><span class="pre">_is_omega</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/cls/types.html#Product._is_omega"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Product._is_omega" title="Permalink to this definition"></a></dt>
+<dd><p>Return a flag indicating whether the type is omega.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A flag indicating whether the type is omega.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Product._organized">
+<span class="sig-name descname"><span class="pre">_organized</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/cls/types.html#Product._organized"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Product._organized" title="Permalink to this definition"></a></dt>
+<dd><p>Return the set of types that the type is organized into.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The set of types that the type is organized into.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>set</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Product._path">
+<span class="sig-name descname"><span class="pre">_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/cls/types.html#Product._path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Product._path" title="Permalink to this definition"></a></dt>
+<dd><p>Return the path to the type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The path to the type, represented as a list of types and the type itself.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Product._size">
+<span class="sig-name descname"><span class="pre">_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/cls/types.html#Product._size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Product._size" title="Permalink to this definition"></a></dt>
+<dd><p>Return the size of the type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The size of the type.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Product._str_prec">
+<span class="sig-name descname"><span class="pre">_str_prec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/cls/types.html#Product._str_prec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Product._str_prec" title="Permalink to this definition"></a></dt>
+<dd><p>Return a string representation of the type with a given precedence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>prec</strong> (<em>int</em>) – The precedence to use when generating the string representation.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The string representation of the type with the given precedence.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Product.is_omega">
+<span class="sig-name descname"><span class="pre">is_omega</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#cls.types.Product.is_omega" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Product.left">
+<span class="sig-name descname"><span class="pre">left</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><span class="pre">Type</span></a></em><a class="headerlink" href="#cls.types.Product.left" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Product.organized">
+<span class="sig-name descname"><span class="pre">organized</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><span class="pre">cls.types.Type</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#cls.types.Product.organized" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Product.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#cls.types.Product.path" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Product.right">
+<span class="sig-name descname"><span class="pre">right</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><span class="pre">Type</span></a></em><a class="headerlink" href="#cls.types.Product.right" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Product.size">
+<span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#cls.types.Product.size" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cls.types.Type">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cls.types.</span></span><span class="sig-name descname"><span class="pre">Type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_omega</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">organized</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cls/types.html#Type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Type" title="Permalink to this definition"></a></dt>
+<dd><p>Abstract base class for a type.</p>
+<p>This class serves as an abstract base class for all types in the system. It provides the basic
+structure for all types, including properties and methods common to all types.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>is_omega</strong> – Indicates whether the type is an <cite>Omega</cite> type.</p></li>
+<li><p><strong>size</strong> – The size of the type.</p></li>
+<li><p><strong>organized</strong> – A set of <a href="#id3"><span class="problematic" id="id4">`</span></a>Type`s that are organized in this type.</p></li>
+<li><p><strong>path</strong> – A tuple representing the path to a <cite>Type</cite> in this type.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Type._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#cls.types.Type._abc_impl" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Type._is_omega">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_is_omega</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/cls/types.html#Type._is_omega"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Type._is_omega" title="Permalink to this definition"></a></dt>
+<dd><p>Return a flag indicating whether the type is omega.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A flag indicating whether the type is omega.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Type._organized">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_organized</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/cls/types.html#Type._organized"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Type._organized" title="Permalink to this definition"></a></dt>
+<dd><p>Return the set of types that the type is organized into.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The set of types that the type is organized into.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>set</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Type._parens">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_parens</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/cls/types.html#Type._parens"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Type._parens" title="Permalink to this definition"></a></dt>
+<dd><p>Return a string with parentheses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>s</strong> (<em>str</em>) – The string to wrap in parentheses.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The string with parentheses.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Type._path">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/cls/types.html#Type._path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Type._path" title="Permalink to this definition"></a></dt>
+<dd><p>Return the path to the type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The path to the type, represented as a list of types and the type itself.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Type._size">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/cls/types.html#Type._size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Type._size" title="Permalink to this definition"></a></dt>
+<dd><p>Return the size of the type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The size of the type.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Type._str_prec">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_str_prec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/cls/types.html#Type._str_prec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Type._str_prec" title="Permalink to this definition"></a></dt>
+<dd><p>Return a string representation of the type with a given precedence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>prec</strong> (<em>int</em>) – The precedence to use when generating the string representation.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The string representation of the type with the given precedence.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cls.types.Type.intersect">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">intersect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">types</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><span class="pre">Type</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#cls.types.Type" title="cls.types.Type"><span class="pre">Type</span></a></span></span><a class="reference internal" href="../_modules/cls/types.html#Type.intersect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cls.types.Type.intersect" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the intersection of the given sequence of types.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>types</strong> (<em>Sequence</em><em>[</em><em>&quot;Type&quot;</em><em>]</em>) – The sequence of types to be intersected.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The result of the intersection of the given types.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#cls.types.Type" title="cls.types.Type">Type</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Type.is_omega">
+<span class="sig-name descname"><span class="pre">is_omega</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#cls.types.Type.is_omega" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Type.organized">
+<span class="sig-name descname"><span class="pre">organized</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#cls.types.Type.organized" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Type.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'Type'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#cls.types.Type.path" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cls.types.Type.size">
+<span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#cls.types.Type.size" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="subtypes.module.html" class="btn btn-neutral float-left" title="subtypes module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../contributing.html" class="btn btn-neutral float-right" title="Contributing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Jan Bessai.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

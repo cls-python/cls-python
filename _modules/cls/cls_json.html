@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>cls.cls_json &mdash; cls-python 0.1.2 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> cls-python
+          </a>
+              <div class="version">
+                0.1.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">CLS-Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Module: cls-python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">cls-python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>cls.cls_json</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for cls.cls_json</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+
+<span class="kn">from</span> <span class="nn">.fcl</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Apply</span><span class="p">,</span>
+    <span class="n">Combinator</span><span class="p">,</span>
+    <span class="n">Failed</span><span class="p">,</span>
+    <span class="n">FiniteCombinatoryLogic</span><span class="p">,</span>
+    <span class="n">InhabitationResult</span><span class="p">,</span>
+    <span class="n">Tree</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.subtypes</span> <span class="kn">import</span> <span class="n">Subtypes</span>
+<span class="kn">from</span> <span class="nn">.types</span> <span class="kn">import</span> <span class="n">Arrow</span><span class="p">,</span> <span class="n">Constructor</span><span class="p">,</span> <span class="n">Intersection</span><span class="p">,</span> <span class="n">Omega</span><span class="p">,</span> <span class="n">Product</span>
+
+
+<div class="viewcode-block" id="CLSEncoder"><a class="viewcode-back" href="../../modules/cls_json.module.html#cls.cls_json.CLSEncoder">[docs]</a><span class="k">class</span> <span class="nc">CLSEncoder</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">JSONEncoder</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A custom JSON encoder for classes related to Finite Combinatory Logic.</span>
+
+<span class="sd">    This class extends `json.JSONEncoder` and provides a custom implementation of the</span>
+<span class="sd">    `default` method to handle objects of the classes `Tree`, `Combinator`, `Apply`,</span>
+<span class="sd">    `Failed`, `Arrow`, `Intersection`, `Product`, `Omega`, `Constructor`, `Subtypes`,</span>
+<span class="sd">    `InhabitationResult`, and `FiniteCombinatoryLogic`.</span>
+
+<span class="sd">    The output of the encoding process is a dictionary with a special key `__type__` that</span>
+<span class="sd">    indicates the type of the original object. The remaining keys in the dictionary store</span>
+<span class="sd">    the attributes of the original object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the JSON encoder.</span>
+
+<span class="sd">        This method calls the `__init__` method of the parent class `json.JSONEncoder`</span>
+<span class="sd">        with the same `kwargs` to properly initialize the object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CLSEncoder.combinator_hook"><a class="viewcode-back" href="../../modules/cls_json.module.html#cls.cls_json.CLSEncoder.combinator_hook">[docs]</a>    <span class="k">def</span> <span class="nf">combinator_hook</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle the encoding of `Combinator` objects.</span>
+
+<span class="sd">        This method delegates the encoding of a `Combinator` object to the `default`</span>
+<span class="sd">        method of `json.JSONEncoder`.</span>
+
+<span class="sd">        :param o: The `Combinator` object to be encoded.</span>
+<span class="sd">        :type o: Combinator</span>
+<span class="sd">        :return: The encoded `Combinator` object.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONEncoder</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CLSEncoder.constructor_hook"><a class="viewcode-back" href="../../modules/cls_json.module.html#cls.cls_json.CLSEncoder.constructor_hook">[docs]</a>    <span class="k">def</span> <span class="nf">constructor_hook</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle the encoding of `Constructor` objects.</span>
+
+<span class="sd">        This method delegates the encoding of a `Constructor` object to the `default`</span>
+<span class="sd">        method of `json.JSONEncoder`.</span>
+
+<span class="sd">        :param o: The `Constructor` object to be encoded.</span>
+<span class="sd">        :type o: Constructor</span>
+<span class="sd">        :return: The encoded `Constructor` object.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONEncoder</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CLSEncoder.tpe"><a class="viewcode-back" href="../../modules/cls_json.module.html#cls.cls_json.CLSEncoder.tpe">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">tpe</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a string representation of the type of an object.</span>
+
+<span class="sd">        This method returns a string of the form `module_name.class_name` for a given</span>
+<span class="sd">        object.</span>
+
+<span class="sd">        :param o: The object whose type is to be returned.</span>
+<span class="sd">        :type o: object</span>
+<span class="sd">        :return: A string representation of the type of `o`.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">o</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">o</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+<div class="viewcode-block" id="CLSEncoder.default"><a class="viewcode-back" href="../../modules/cls_json.module.html#cls.cls_json.CLSEncoder.default">[docs]</a>    <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle the encoding of objects.</span>
+
+<span class="sd">        This method provides a custom implementation of the `default` method to handle</span>
+<span class="sd">        objects of various types related to Finite Combinatory Logic. If the object is</span>
+<span class="sd">        not one of the supported types, the method delegates the encoding to the `default`</span>
+<span class="sd">        method of `json.JSONEncoder`.</span>
+
+<span class="sd">        :param o: The object to be encoded.</span>
+<span class="sd">        :type o: object</span>
+<span class="sd">        :return: The encoded object.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Tree</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;__type__&quot;</span><span class="p">:</span> <span class="n">CLSEncoder</span><span class="o">.</span><span class="n">tpe</span><span class="p">(</span><span class="n">o</span><span class="p">),</span>
+                <span class="s2">&quot;rule&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">rule</span><span class="p">),</span>
+                <span class="s2">&quot;children&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">o</span><span class="o">.</span><span class="n">children</span><span class="p">],</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Combinator</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;__type__&quot;</span><span class="p">:</span> <span class="n">CLSEncoder</span><span class="o">.</span><span class="n">tpe</span><span class="p">(</span><span class="n">o</span><span class="p">),</span>
+                <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">target</span><span class="p">),</span>
+                <span class="s2">&quot;combinator&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">combinator_hook</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">combinator</span><span class="p">),</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Apply</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;__type__&quot;</span><span class="p">:</span> <span class="n">CLSEncoder</span><span class="o">.</span><span class="n">tpe</span><span class="p">(</span><span class="n">o</span><span class="p">),</span>
+                <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">target</span><span class="p">),</span>
+                <span class="s2">&quot;function_type&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">function_type</span><span class="p">),</span>
+                <span class="s2">&quot;argument_type&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">argument_type</span><span class="p">),</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Failed</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;__type__&quot;</span><span class="p">:</span> <span class="n">CLSEncoder</span><span class="o">.</span><span class="n">tpe</span><span class="p">(</span><span class="n">o</span><span class="p">),</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">target</span><span class="p">)}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Arrow</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;__type__&quot;</span><span class="p">:</span> <span class="n">CLSEncoder</span><span class="o">.</span><span class="n">tpe</span><span class="p">(</span><span class="n">o</span><span class="p">),</span>
+                <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">source</span><span class="p">),</span>
+                <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">target</span><span class="p">),</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Intersection</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;__type__&quot;</span><span class="p">:</span> <span class="n">CLSEncoder</span><span class="o">.</span><span class="n">tpe</span><span class="p">(</span><span class="n">o</span><span class="p">),</span>
+                <span class="s2">&quot;left&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">left</span><span class="p">),</span>
+                <span class="s2">&quot;right&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">right</span><span class="p">),</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Product</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;__type__&quot;</span><span class="p">:</span> <span class="n">CLSEncoder</span><span class="o">.</span><span class="n">tpe</span><span class="p">(</span><span class="n">o</span><span class="p">),</span>
+                <span class="s2">&quot;left&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">left</span><span class="p">),</span>
+                <span class="s2">&quot;right&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">right</span><span class="p">),</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Omega</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;__type__&quot;</span><span class="p">:</span> <span class="n">CLSEncoder</span><span class="o">.</span><span class="n">tpe</span><span class="p">(</span><span class="n">o</span><span class="p">)}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Constructor</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;__type__&quot;</span><span class="p">:</span> <span class="n">CLSEncoder</span><span class="o">.</span><span class="n">tpe</span><span class="p">(</span><span class="n">o</span><span class="p">),</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">constructor_hook</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+                <span class="s2">&quot;arg&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">arg</span><span class="p">),</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Subtypes</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;__type__&quot;</span><span class="p">:</span> <span class="n">CLSEncoder</span><span class="o">.</span><span class="n">tpe</span><span class="p">(</span><span class="n">o</span><span class="p">),</span>
+                <span class="s2">&quot;environment&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">constructor_hook</span><span class="p">(</span><span class="n">k</span><span class="p">):</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">constructor_hook</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">o</span><span class="o">.</span><span class="n">environment</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="p">},</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">InhabitationResult</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;__type__&quot;</span><span class="p">:</span> <span class="n">CLSEncoder</span><span class="o">.</span><span class="n">tpe</span><span class="p">(</span><span class="n">o</span><span class="p">),</span>
+                <span class="s2">&quot;targets&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">targets</span><span class="p">)],</span>
+                <span class="s2">&quot;rules&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">o</span><span class="o">.</span><span class="n">rules</span><span class="p">],</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">FiniteCombinatoryLogic</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;__type__&quot;</span><span class="p">:</span> <span class="n">CLSEncoder</span><span class="o">.</span><span class="n">tpe</span><span class="p">(</span><span class="n">o</span><span class="p">),</span>
+                <span class="s2">&quot;repository&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">combinator_hook</span><span class="p">(</span><span class="n">c</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">o</span><span class="o">.</span><span class="n">repository</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;subtypes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">subtypes</span><span class="p">),</span>
+                <span class="s2">&quot;processes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">processes</span><span class="p">),</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONEncoder</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CLSDecoder"><a class="viewcode-back" href="../../modules/cls_json.module.html#cls.cls_json.CLSDecoder">[docs]</a><span class="k">class</span> <span class="nc">CLSDecoder</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">JSONDecoder</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A custom JSON decoder for decoding objects of different types from a JSON string related to Finite Combinatory Logic.</span>
+
+<span class="sd">    The decoder uses the `__type__` field in the JSON string to determine the type of the object being decoded. The object is then constructed using the information in the JSON string.</span>
+
+<span class="sd">    The decoder supports several different types of objects including `Tree`, `Combinator`, `Apply`, `Failed`, `Arrow`, `Intersection`, `Product`, `Omega`, `Constructor`, `Subtypes`, `InhabitationResult`, and `FiniteCombinatoryLogic`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes the `CLSDecoder` class with the `object_hook` set to `self`.</span>
+
+<span class="sd">        Any additional keyword arguments passed to the constructor will be passed to the parent `JSONDecoder` constructor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">object_hook</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CLSDecoder.combinator_hook"><a class="viewcode-back" href="../../modules/cls_json.module.html#cls.cls_json.CLSDecoder.combinator_hook">[docs]</a>    <span class="k">def</span> <span class="nf">combinator_hook</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dct</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A hook for processing the `combinator` field in the JSON string.</span>
+
+<span class="sd">        By default, the hook simply returns the `combinator` field without any processing.</span>
+
+<span class="sd">        :param dct: The dictionary representing the JSON object being decoded.</span>
+<span class="sd">        :type dct: dict</span>
+<span class="sd">        :return: The `combinator` field.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">dct</span></div>
+
+<div class="viewcode-block" id="CLSDecoder.constructor_hook"><a class="viewcode-back" href="../../modules/cls_json.module.html#cls.cls_json.CLSDecoder.constructor_hook">[docs]</a>    <span class="k">def</span> <span class="nf">constructor_hook</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dct</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the input dictionary `dct` unmodified.</span>
+
+<span class="sd">        This method is a hook for `CLSDecoder` class to handle `Constructor` objects</span>
+<span class="sd">        during JSON decoding. It simply returns the input dictionary `dct` unmodified.</span>
+
+<span class="sd">        :param dct: A dictionary representing a JSON object.</span>
+<span class="sd">        :type dct: dict</span>
+<span class="sd">        :return: The input dictionary `dct` unmodified.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">dct</span></div>
+
+<div class="viewcode-block" id="CLSDecoder.tpe"><a class="viewcode-back" href="../../modules/cls_json.module.html#cls.cls_json.CLSDecoder.tpe">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">tpe</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A static method that returns a string representation of the class object.</span>
+
+<span class="sd">        :return: A string representation of the class object, in the format `{module}.{qualname}`.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dct</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The `__call__` method of the `CLSDecoder` class is used to parse a dictionary, `dct`,</span>
+<span class="sd">        into an object of one of several possible subclasses of the `CLS` class.</span>
+
+<span class="sd">        The class of the returned object is determined by the `__type__` key in `dct`, which</span>
+<span class="sd">        specifies the type of the object. The type is represented as a string of the form</span>
+<span class="sd">        `module_name.class_name`. The method uses the `tpe` static method to convert a class</span>
+<span class="sd">        object into such a string.</span>
+
+<span class="sd">        The method uses several `if` statements to check the value of `dct[&quot;__type__&quot;]` against</span>
+<span class="sd">        the string representation of each possible `CLS` subclass, and returns an object of the</span>
+<span class="sd">        corresponding class if a match is found. The constructor arguments of the returned object</span>
+<span class="sd">        are extracted from `dct` and possibly processed by the `constructor_hook` and</span>
+<span class="sd">        `combinator_hook` methods of the `CLSDecoder` class.</span>
+
+<span class="sd">        If the value of `dct[&quot;__type__&quot;]` does not match any of the expected values, the original</span>
+<span class="sd">        dictionary `dct` is returned as is.</span>
+
+
+<span class="sd">        :param dct: The dictionary to be parsed into an object of a `CLS` subclass.</span>
+<span class="sd">        :type dct: dict</span>
+<span class="sd">        :return: An object of a subclass of the `CLS` class, or the original `dct` if no match was found.</span>
+<span class="sd">        :rtype: object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;__type__&quot;</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">:</span>
+            <span class="n">tpe</span> <span class="o">=</span> <span class="n">dct</span><span class="p">[</span><span class="s2">&quot;__type__&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">tpe</span> <span class="o">==</span> <span class="n">CLSDecoder</span><span class="o">.</span><span class="n">tpe</span><span class="p">(</span><span class="n">Tree</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">Tree</span><span class="p">(</span><span class="n">rule</span><span class="o">=</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;rule&quot;</span><span class="p">],</span> <span class="n">children</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;children&quot;</span><span class="p">]))</span>
+            <span class="k">elif</span> <span class="n">tpe</span> <span class="o">==</span> <span class="n">CLSDecoder</span><span class="o">.</span><span class="n">tpe</span><span class="p">(</span><span class="n">Combinator</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">Combinator</span><span class="p">(</span>
+                    <span class="n">target</span><span class="o">=</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">],</span>
+                    <span class="n">combinator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">combinator_hook</span><span class="p">(</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;combinator&quot;</span><span class="p">]),</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">tpe</span> <span class="o">==</span> <span class="n">CLSDecoder</span><span class="o">.</span><span class="n">tpe</span><span class="p">(</span><span class="n">Apply</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">Apply</span><span class="p">(</span>
+                    <span class="n">target</span><span class="o">=</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">],</span>
+                    <span class="n">function_type</span><span class="o">=</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;function_type&quot;</span><span class="p">],</span>
+                    <span class="n">argument_type</span><span class="o">=</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;argument_type&quot;</span><span class="p">],</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">tpe</span> <span class="o">==</span> <span class="n">CLSDecoder</span><span class="o">.</span><span class="n">tpe</span><span class="p">(</span><span class="n">Failed</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">Failed</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">tpe</span> <span class="o">==</span> <span class="n">CLSDecoder</span><span class="o">.</span><span class="n">tpe</span><span class="p">(</span><span class="n">Arrow</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">Arrow</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">],</span> <span class="n">target</span><span class="o">=</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">tpe</span> <span class="o">==</span> <span class="n">CLSDecoder</span><span class="o">.</span><span class="n">tpe</span><span class="p">(</span><span class="n">Intersection</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">Intersection</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;left&quot;</span><span class="p">],</span> <span class="n">right</span><span class="o">=</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;right&quot;</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">tpe</span> <span class="o">==</span> <span class="n">CLSDecoder</span><span class="o">.</span><span class="n">tpe</span><span class="p">(</span><span class="n">Product</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">Product</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;left&quot;</span><span class="p">],</span> <span class="n">right</span><span class="o">=</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;right&quot;</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">tpe</span> <span class="o">==</span> <span class="n">CLSDecoder</span><span class="o">.</span><span class="n">tpe</span><span class="p">(</span><span class="n">Omega</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">Omega</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">tpe</span> <span class="o">==</span> <span class="n">CLSDecoder</span><span class="o">.</span><span class="n">tpe</span><span class="p">(</span><span class="n">Constructor</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">Constructor</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">constructor_hook</span><span class="p">(</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]),</span> <span class="n">arg</span><span class="o">=</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;arg&quot;</span><span class="p">]</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">tpe</span> <span class="o">==</span> <span class="n">CLSDecoder</span><span class="o">.</span><span class="n">tpe</span><span class="p">(</span><span class="n">Subtypes</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">Subtypes</span><span class="p">(</span>
+                    <span class="n">environment</span><span class="o">=</span><span class="p">{</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">constructor_hook</span><span class="p">(</span><span class="n">k</span><span class="p">):</span> <span class="p">{</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">constructor_hook</span><span class="p">(</span><span class="n">st</span><span class="p">)</span> <span class="k">for</span> <span class="n">st</span> <span class="ow">in</span> <span class="n">v</span>
+                        <span class="p">}</span>
+                        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">[</span><span class="s2">&quot;environment&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">tpe</span> <span class="o">==</span> <span class="n">CLSDecoder</span><span class="o">.</span><span class="n">tpe</span><span class="p">(</span><span class="n">InhabitationResult</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">InhabitationResult</span><span class="p">(</span>
+                    <span class="n">targets</span><span class="o">=</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;targets&quot;</span><span class="p">],</span> <span class="n">rules</span><span class="o">=</span><span class="p">{</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">[</span><span class="s2">&quot;rules&quot;</span><span class="p">]}</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">tpe</span> <span class="o">==</span> <span class="n">CLSDecoder</span><span class="o">.</span><span class="n">tpe</span><span class="p">(</span><span class="n">FiniteCombinatoryLogic</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">FiniteCombinatoryLogic</span><span class="p">(</span>
+                    <span class="n">repository</span><span class="o">=</span><span class="p">{</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">combinator_hook</span><span class="p">(</span><span class="n">k</span><span class="p">):</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">[</span><span class="s2">&quot;repository&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                    <span class="p">},</span>
+                    <span class="n">subtypes</span><span class="o">=</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;subtypes&quot;</span><span class="p">],</span>
+                    <span class="n">processes</span><span class="o">=</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;processes&quot;</span><span class="p">],</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">dct</span>
+        <span class="k">return</span> <span class="n">dct</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Jan Bessai.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

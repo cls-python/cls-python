@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>cls.types &mdash; cls-python 0.1.2 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> cls-python
+          </a>
+              <div class="version">
+                0.1.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">CLS-Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Module: cls-python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">cls-python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>cls.types</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for cls.types</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+
+
+<div class="viewcode-block" id="Type"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Type">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Type</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract base class for a type.</span>
+
+<span class="sd">    This class serves as an abstract base class for all types in the system. It provides the basic</span>
+<span class="sd">    structure for all types, including properties and methods common to all types.</span>
+
+<span class="sd">    :ivar is_omega: Indicates whether the type is an `Omega` type.</span>
+<span class="sd">    :type is_omega: bool</span>
+<span class="sd">    :ivar size: The size of the type.</span>
+<span class="sd">    :type size: int</span>
+<span class="sd">    :ivar organized: A set of `Type`s that are organized in this type.</span>
+<span class="sd">    :type organized: set[Type]</span>
+<span class="sd">    :ivar path: A tuple representing the path to a `Type` in this type.</span>
+<span class="sd">    :type path: tuple[list[Type], Type] | None</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_omega</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">organized</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">],</span> <span class="s2">&quot;Type&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">init</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a string representation of the type.</span>
+
+<span class="sd">        :return: The string representation of the type.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_str_prec</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;Type&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Type&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the product of two types.</span>
+
+
+<span class="sd">        :param other: The other type to form the product with</span>
+<span class="sd">        :type other: Type</span>
+<span class="sd">        :return: The product of the two types.</span>
+<span class="sd">        :rtype: Type</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Product</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Type._path"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Type._path">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">],</span> <span class="s2">&quot;Type&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the path to the type.</span>
+
+<span class="sd">        :return: The path to the type, represented as a list of types and the type itself.</span>
+<span class="sd">        :rtype: tuple</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="Type._organized"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Type._organized">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_organized</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the set of types that the type is organized into.</span>
+
+<span class="sd">        :return: The set of types that the type is organized into.</span>
+<span class="sd">        :rtype: set</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="Type._size"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Type._size">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the size of the type.</span>
+
+<span class="sd">        :return: The size of the type.</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="Type._is_omega"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Type._is_omega">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_is_omega</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a flag indicating whether the type is omega.</span>
+
+<span class="sd">        :return: A flag indicating whether the type is omega.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="Type._str_prec"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Type._str_prec">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_str_prec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prec</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a string representation of the type with a given precedence.</span>
+
+<span class="sd">        :param prec: The precedence to use when generating the string representation.</span>
+<span class="sd">        :type prec: int</span>
+<span class="sd">        :return: The string representation of the type with the given precedence.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="Type._parens"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Type._parens">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_parens</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a string with parentheses.</span>
+
+<span class="sd">        :param s: The string to wrap in parentheses.</span>
+<span class="sd">        :type s: str</span>
+<span class="sd">        :return: The string with parentheses.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+
+<div class="viewcode-block" id="Type.intersect"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Type.intersect">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">intersect</span><span class="p">(</span><span class="n">types</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Type&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the intersection of the given sequence of types.</span>
+
+<span class="sd">        :param types: The sequence of types to be intersected.</span>
+<span class="sd">        :type types: Sequence[&quot;Type&quot;]</span>
+<span class="sd">        :return: The result of the intersection of the given types.</span>
+<span class="sd">        :rtype: Type</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">types</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">rtypes</span> <span class="o">=</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">types</span><span class="p">)</span>
+            <span class="n">result</span><span class="p">:</span> <span class="s2">&quot;Type&quot;</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">rtypes</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">ty</span> <span class="ow">in</span> <span class="n">rtypes</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">Intersection</span><span class="p">(</span><span class="n">ty</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Omega</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a pickleable state for the instance of the class.</span>
+
+<span class="sd">        :return: The state of the class.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">del</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;is_omega&quot;</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;organized&quot;</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">state</span>
+
+    <span class="k">def</span> <span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Restores the state of the instance of the class.</span>
+
+<span class="sd">        :param state: The state to be restored.</span>
+<span class="sd">        :type state: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;is_omega&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_omega</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_size</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;organized&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_organized</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Omega"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Omega">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Omega</span><span class="p">(</span><span class="n">Type</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents the omega type in type theory. This class extends the abstract class `Type`.&quot;&quot;&quot;</span>
+
+    <span class="n">is_omega</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">size</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">organized</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">Type</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">],</span> <span class="s2">&quot;Type&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the attributes of this type after object creation.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">is_omega</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_is_omega</span><span class="p">(),</span>
+            <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_size</span><span class="p">(),</span>
+            <span class="n">organized</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_organized</span><span class="p">(),</span>
+            <span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Omega._is_omega"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Omega._is_omega">[docs]</a>    <span class="k">def</span> <span class="nf">_is_omega</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Omega._size"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Omega._size">[docs]</a>    <span class="k">def</span> <span class="nf">_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="Omega._path"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Omega._path">[docs]</a>    <span class="k">def</span> <span class="nf">_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">],</span> <span class="s2">&quot;Type&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Omega._organized"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Omega._organized">[docs]</a>    <span class="k">def</span> <span class="nf">_organized</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Omega._str_prec"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Omega._str_prec">[docs]</a>    <span class="k">def</span> <span class="nf">_str_prec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prec</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;omega&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="Constructor"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Constructor">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Constructor</span><span class="p">(</span><span class="n">Type</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A type constructor that is used to build more complex types.</span>
+
+<span class="sd">    :param name: The name of the constructor.</span>
+<span class="sd">    :type name: object</span>
+<span class="sd">    :param arg: The argument of the constructor.</span>
+<span class="sd">    :type arg: Type</span>
+<span class="sd">    :ivar is_omega: Indicates whether the type is an `Omega` type.</span>
+<span class="sd">    :type is_omega: bool</span>
+<span class="sd">    :ivar size: The size of the type.</span>
+<span class="sd">    :type size: int</span>
+<span class="sd">    :ivar organized: A set of `Type`s that are organized in this type.</span>
+<span class="sd">    :type organized: set[Type]</span>
+<span class="sd">    :ivar path: A tuple representing the path to a `Type` in this type.</span>
+<span class="sd">    :type path: tuple[list[Type], Type] | None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">arg</span><span class="p">:</span> <span class="n">Type</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">Omega</span><span class="p">(),</span> <span class="n">init</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">is_omega</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">organized</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">Type</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">],</span> <span class="s2">&quot;Type&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the type after it has been created.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">is_omega</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_is_omega</span><span class="p">(),</span>
+            <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_size</span><span class="p">(),</span>
+            <span class="n">organized</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_organized</span><span class="p">(),</span>
+            <span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Constructor._is_omega"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Constructor._is_omega">[docs]</a>    <span class="k">def</span> <span class="nf">_is_omega</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Constructor._size"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Constructor._size">[docs]</a>    <span class="k">def</span> <span class="nf">_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg</span><span class="o">.</span><span class="n">size</span></div>
+
+<div class="viewcode-block" id="Constructor._path"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Constructor._path">[docs]</a>    <span class="k">def</span> <span class="nf">_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">],</span> <span class="s2">&quot;Type&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">([],</span> <span class="bp">self</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg</span><span class="o">.</span><span class="n">path</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg</span> <span class="o">==</span> <span class="n">Omega</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Constructor._organized"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Constructor._organized">[docs]</a>    <span class="k">def</span> <span class="nf">_organized</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="p">{</span><span class="bp">self</span><span class="p">}</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">()</span>
+            <span class="k">else</span> <span class="nb">set</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">ap</span><span class="p">:</span> <span class="n">Constructor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">ap</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg</span><span class="o">.</span><span class="n">organized</span><span class="p">))</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Constructor._str_prec"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Constructor._str_prec">[docs]</a>    <span class="k">def</span> <span class="nf">_str_prec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prec</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg</span> <span class="o">==</span> <span class="n">Omega</span><span class="p">():</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arg</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="Product"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Product">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Product</span><span class="p">(</span><span class="n">Type</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class representing the product type in the type theory.</span>
+
+<span class="sd">    :param Type left: The left-hand side type.</span>
+<span class="sd">    :param Type right: The right-hand side type.</span>
+<span class="sd">    :param bool is_omega: Indicates whether this type is omega.</span>
+<span class="sd">    :param int size: The size of this type.</span>
+<span class="sd">    :param set[Type] organized: The organized forms of this type.</span>
+<span class="sd">    :param tuple[list[Type], Type] | None path: The path to the root of the organized forms of this type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">left</span><span class="p">:</span> <span class="n">Type</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">right</span><span class="p">:</span> <span class="n">Type</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">is_omega</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">organized</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">Type</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">],</span> <span class="s2">&quot;Type&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the Product type with the values of its attributes.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">is_omega</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_is_omega</span><span class="p">(),</span>
+            <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_size</span><span class="p">(),</span>
+            <span class="n">organized</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_organized</span><span class="p">(),</span>
+            <span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Product._is_omega"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Product._is_omega">[docs]</a>    <span class="k">def</span> <span class="nf">_is_omega</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Product._size"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Product._size">[docs]</a>    <span class="k">def</span> <span class="nf">_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">size</span></div>
+
+<div class="viewcode-block" id="Product._path"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Product._path">[docs]</a>    <span class="k">def</span> <span class="nf">_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">],</span> <span class="s2">&quot;Type&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="p">([],</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span> <span class="o">==</span> <span class="n">Omega</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span> <span class="o">==</span> <span class="n">Omega</span><span class="p">())</span>
+                <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">path</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span> <span class="o">==</span> <span class="n">Omega</span><span class="p">())</span>
+                <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span> <span class="o">==</span> <span class="n">Omega</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Product._organized"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Product._organized">[docs]</a>    <span class="k">def</span> <span class="nf">_organized</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">():</span>
+            <span class="k">return</span> <span class="p">{</span><span class="bp">self</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span>
+                <span class="nb">set</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">lp</span><span class="p">:</span> <span class="n">Product</span><span class="p">(</span><span class="n">lp</span><span class="p">,</span> <span class="n">Omega</span><span class="p">()),</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">organized</span><span class="p">)),</span>
+                <span class="nb">set</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">rp</span><span class="p">:</span> <span class="n">Product</span><span class="p">(</span><span class="n">Omega</span><span class="p">(),</span> <span class="n">rp</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">organized</span><span class="p">)),</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Product._str_prec"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Product._str_prec">[docs]</a>    <span class="k">def</span> <span class="nf">_str_prec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prec</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">product_prec</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">9</span>
+
+        <span class="k">def</span> <span class="nf">product_str_prec</span><span class="p">(</span><span class="n">other</span><span class="p">:</span> <span class="n">Type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">match</span> <span class="n">other</span><span class="p">:</span>
+                <span class="k">case</span><span class="w"> </span><span class="n">Product</span><span class="p">(</span><span class="k">_</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">other</span><span class="o">.</span><span class="n">_str_prec</span><span class="p">(</span><span class="n">product_prec</span><span class="p">)</span>
+                <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">other</span><span class="o">.</span><span class="n">_str_prec</span><span class="p">(</span><span class="n">product_prec</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">result</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">product_str_prec</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">)</span><span class="si">}</span><span class="s2"> * </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">_str_prec</span><span class="p">(</span><span class="n">product_prec</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">Type</span><span class="o">.</span><span class="n">_parens</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="k">if</span> <span class="n">prec</span> <span class="o">&gt;</span> <span class="n">product_prec</span> <span class="k">else</span> <span class="n">result</span></div></div>
+
+
+<div class="viewcode-block" id="Arrow"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Arrow">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Arrow</span><span class="p">(</span><span class="n">Type</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The `Arrow` class represents the type of a function from a source type to a target type.</span>
+
+<span class="sd">    :param Type source: The source type.</span>
+<span class="sd">    :param Type target: The target type.</span>
+<span class="sd">    :param bool is_omega: Indicates whether this type is omega.</span>
+<span class="sd">    :param int size: The size of this type.</span>
+<span class="sd">    :param set[Type] organized: The organized forms of this type.</span>
+<span class="sd">    :param tuple[list[Type], Type] | None path: The path to the root of the organized forms of this type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">source</span><span class="p">:</span> <span class="n">Type</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">target</span><span class="p">:</span> <span class="n">Type</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">is_omega</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">organized</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">Type</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">],</span> <span class="s2">&quot;Type&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the Arrow class.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">is_omega</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_is_omega</span><span class="p">(),</span>
+            <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_size</span><span class="p">(),</span>
+            <span class="n">organized</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_organized</span><span class="p">(),</span>
+            <span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Arrow._is_omega"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Arrow._is_omega">[docs]</a>    <span class="k">def</span> <span class="nf">_is_omega</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">is_omega</span></div>
+
+<div class="viewcode-block" id="Arrow._size"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Arrow._size">[docs]</a>    <span class="k">def</span> <span class="nf">_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">size</span></div>
+
+<div class="viewcode-block" id="Arrow._path"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Arrow._path">[docs]</a>    <span class="k">def</span> <span class="nf">_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">],</span> <span class="s2">&quot;Type&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">path</span>
+            <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Arrow._organized"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Arrow._organized">[docs]</a>    <span class="k">def</span> <span class="nf">_organized</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="p">{</span><span class="bp">self</span><span class="p">}</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">()</span>
+            <span class="k">else</span> <span class="nb">set</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">tp</span><span class="p">:</span> <span class="n">Arrow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="n">tp</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">organized</span><span class="p">))</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Arrow._str_prec"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Arrow._str_prec">[docs]</a>    <span class="k">def</span> <span class="nf">_str_prec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prec</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">arrow_prec</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span>
+        <span class="n">result</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="k">match</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">:</span>
+            <span class="k">case</span><span class="w"> </span><span class="n">Arrow</span><span class="p">(</span><span class="k">_</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">_str_prec</span><span class="p">(</span><span class="n">arrow_prec</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">_str_prec</span><span class="p">(</span><span class="n">arrow_prec</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">_str_prec</span><span class="p">(</span><span class="n">arrow_prec</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">_str_prec</span><span class="p">(</span><span class="n">arrow_prec</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">Type</span><span class="o">.</span><span class="n">_parens</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="k">if</span> <span class="n">prec</span> <span class="o">&gt;</span> <span class="n">arrow_prec</span> <span class="k">else</span> <span class="n">result</span></div></div>
+
+
+<div class="viewcode-block" id="Intersection"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Intersection">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Intersection</span><span class="p">(</span><span class="n">Type</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A type representing the intersection of two other types.</span>
+
+<span class="sd">    :param Type left: The left type in the intersection.</span>
+<span class="sd">    :param Type right: The right type in the intersection.</span>
+<span class="sd">    :param bool is_omega: Indicates if both `left` and `right` are equal to omega.</span>
+<span class="sd">    :param int size: The number of distinct primitive types in the intersection.</span>
+<span class="sd">    :param set[Type] organized: A set of primitive types in the intersection.</span>
+<span class="sd">    :param tuple[list[Type], Type] | None path: A path to the root of the intersection, or None if there is no such path.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">left</span><span class="p">:</span> <span class="n">Type</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">right</span><span class="p">:</span> <span class="n">Type</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">is_omega</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">organized</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">Type</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">],</span> <span class="s2">&quot;Type&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the attributes of the intersection type.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">is_omega</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_is_omega</span><span class="p">(),</span>
+            <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_size</span><span class="p">(),</span>
+            <span class="n">organized</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_organized</span><span class="p">(),</span>
+            <span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Intersection._is_omega"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Intersection._is_omega">[docs]</a>    <span class="k">def</span> <span class="nf">_is_omega</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">is_omega</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">is_omega</span></div>
+
+<div class="viewcode-block" id="Intersection._size"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Intersection._size">[docs]</a>    <span class="k">def</span> <span class="nf">_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">size</span></div>
+
+<div class="viewcode-block" id="Intersection._path"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Intersection._path">[docs]</a>    <span class="k">def</span> <span class="nf">_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">],</span> <span class="s2">&quot;Type&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Intersection._organized"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Intersection._organized">[docs]</a>    <span class="k">def</span> <span class="nf">_organized</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">organized</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">organized</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Intersection._str_prec"><a class="viewcode-back" href="../../modules/types.module.html#cls.types.Intersection._str_prec">[docs]</a>    <span class="k">def</span> <span class="nf">_str_prec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prec</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">intersection_prec</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span>
+
+        <span class="k">def</span> <span class="nf">intersection_str_prec</span><span class="p">(</span><span class="n">other</span><span class="p">:</span> <span class="n">Type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">match</span> <span class="n">other</span><span class="p">:</span>
+                <span class="k">case</span><span class="w"> </span><span class="n">Intersection</span><span class="p">(</span><span class="k">_</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">other</span><span class="o">.</span><span class="n">_str_prec</span><span class="p">(</span><span class="n">intersection_prec</span><span class="p">)</span>
+                <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">other</span><span class="o">.</span><span class="n">_str_prec</span><span class="p">(</span><span class="n">intersection_prec</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">result</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">intersection_str_prec</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">)</span><span class="si">}</span><span class="s2"> &amp; </span><span class="si">{</span><span class="n">intersection_str_prec</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">Type</span><span class="o">.</span><span class="n">_parens</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="k">if</span> <span class="n">prec</span> <span class="o">&gt;</span> <span class="n">intersection_prec</span> <span class="k">else</span> <span class="n">result</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Jan Bessai.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
