@@ -20,6 +20,11 @@ setup(
     author="Jan Bessai",
     author_email="jan.bessai@tu-dortmund.de",
     python_requires=">=3.10",
+    project_urls={
+        "Bug Tracker": "https://github.com/cls-python/cls-python/issues",
+        "Documentation": "https://cls-python.github.io/cls-python/readme.html",
+        "Source Code": "https://github.com/cls-python/cls-python",
+    },
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Science/Research",
