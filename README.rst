@@ -1,10 +1,19 @@
 ==========
-Cls-Python
+CLS-Python
 ==========
 
 
-.. image:: https://img.shields.io/pypi/v/cls-python.svg
+.. image:: https://img.shields.io/pypi/v/cls-python
         :target: https://pypi.python.org/pypi/cls-python
+
+.. image:: https://img.shields.io/pypi/pyversions/cls-python
+        :target: https://pypi.python.org/pypi/cls-python
+
+.. image:: https://img.shields.io/pypi/l/cls-python?color=blue
+        :target: https://github.com/cls-python/cls-python/blob/main/LICENSE
+
+.. image:: https://img.shields.io/github/issues/cls-python/cls-python
+        :target: https://github.com/cls-python/cls-python/issues
 
 .. image:: https://github.com/cls-python/cls-python/actions/workflows/test-build-release.yaml/badge.svg
         :target: https://github.com/cls-python/cls-python/actions/workflows/test-build-release.yaml
