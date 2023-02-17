@@ -4,7 +4,11 @@ name: "Test-Build-Release"
 
 on:
     push:
-        branches: [main]
+        branches:
+            - main
+        # Sequence of patterns matched against refs/tags
+        tags:
+            - v*
     pull_request:
 
 defaults:
