@@ -6,6 +6,7 @@ History
 ------------------
 
 * Add project_urls to setup.py.
+* bump wheel version to mitigate security issue.
 
 
 0.1.3 (2023-02-17)
