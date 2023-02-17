@@ -2,4 +2,4 @@
 
 __author__ = """Jan Bessai"""
 __email__ = "jan.bessai@tu-dortmund.de"
-__version__ = "0.1.3"
+__version__ = "0.1.4"
