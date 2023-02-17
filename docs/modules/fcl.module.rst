@@ -2,7 +2,7 @@
 fcl module
 ==========
 
-.. automodule:: cls_python.fcl
+.. automodule:: cls.fcl
    :members:
    :private-members:
    :undoc-members:

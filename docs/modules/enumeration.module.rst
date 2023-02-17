@@ -2,7 +2,7 @@
 enumeration module
 ==================
 
-.. automodule:: cls_python.enumeration
+.. automodule:: cls.enumeration
    :members:
    :private-members:
    :undoc-members:

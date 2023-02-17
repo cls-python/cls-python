@@ -1,8 +1,8 @@
 import unittest
 
-from cls_python.fcl import Apply, Combinator, Failed, FiniteCombinatoryLogic, Rule
-from cls_python.subtypes import Subtypes
-from cls_python.types import Arrow, Constructor
+from cls.fcl import Apply, Combinator, Failed, FiniteCombinatoryLogic, Rule
+from cls.subtypes import Subtypes
+from cls.types import Arrow, Constructor
 
 # This tests for an old subtle bug that once ocured in cls-scala.
 repository = {

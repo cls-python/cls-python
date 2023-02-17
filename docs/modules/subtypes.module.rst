@@ -2,7 +2,7 @@
 subtypes module
 ===============
 
-.. automodule:: cls_python.subtypes
+.. automodule:: cls.subtypes
    :members:
    :private-members:
    :undoc-members:

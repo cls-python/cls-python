@@ -1,9 +1,9 @@
 from collections.abc import Callable
 from dataclasses import dataclass, field
 
-from cls_python.fcl import FiniteCombinatoryLogic
-from cls_python.subtypes import Subtypes
-from cls_python.types import Arrow, Constructor, Product, Type
+from cls.fcl import FiniteCombinatoryLogic
+from cls.subtypes import Subtypes
+from cls.types import Arrow, Constructor, Product, Type
 
 labyrinth_free = (
     (

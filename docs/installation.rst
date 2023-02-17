@@ -8,13 +8,13 @@ Installation
 Stable release
 --------------
 
-To install cls-python, run this command in your terminal:
+To install CLS, run this command in your terminal:
 
 .. code-block:: console
 
-    $ pip install cls_python
+    $ pip install cls-python
 
-This is the preferred method to install cls-python, as it will always install the most recent stable release.
+This is the preferred method to install CLS, as it will always install the most recent stable release.
 
 If you don't have `pip`_ installed, this `Python installation guide`_ can guide
 you through the process.
@@ -26,7 +26,7 @@ you through the process.
 From sources
 ------------
 
-The sources for cls-python can be downloaded from the `Github repo`_.
+The sources for CLS can be downloaded from the `Github repo`_.
 
 You can either clone the public repository:
 
@@ -38,7 +38,7 @@ Or download the `tarball`_:
 
 .. code-block:: console
 
-    $ curl -OJL https://github.com/cls-python/cls_python/tarball/master
+    $ curl -OJL https://github.com/cls-python/cls-python/tarball/master
 
 Once you have a copy of the source, you can install it with:
 
@@ -48,4 +48,4 @@ Once you have a copy of the source, you can install it with:
 
 
 .. _Github repo: https://github.com/cls-python/cls-python
-.. _tarball: https://github.com/cls-python/cls_python/tarball/master
+.. _tarball: https://github.com/cls-python/cls-python/tarball/master

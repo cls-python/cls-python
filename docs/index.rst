@@ -1,4 +1,4 @@
-Welcome to cls-python's documentation!
+Welcome to CLS's documentation!
 ======================================
 
 .. toctree::

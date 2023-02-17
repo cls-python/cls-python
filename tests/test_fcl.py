@@ -2,10 +2,10 @@ import unittest
 from collections import deque
 from collections.abc import Callable
 
-from cls_python.enumeration import Enumeration
-from cls_python.fcl import Apply, Combinator, Failed, FiniteCombinatoryLogic, Rule, Tree
-from cls_python.subtypes import Subtypes
-from cls_python.types import Arrow, Constructor, Intersection, Omega, Product, Type
+from cls.enumeration import Enumeration
+from cls.fcl import Apply, Combinator, Failed, FiniteCombinatoryLogic, Rule, Tree
+from cls.subtypes import Subtypes
+from cls.types import Arrow, Constructor, Intersection, Omega, Product, Type
 
 
 class Succ:

@@ -1,8 +1,8 @@
 import unittest
 
-from cls_python.fcl import Apply, Combinator, FiniteCombinatoryLogic, Tree
-from cls_python.subtypes import Subtypes
-from cls_python.types import Arrow, Constructor, Intersection
+from cls.fcl import Apply, Combinator, FiniteCombinatoryLogic, Tree
+from cls.subtypes import Subtypes
+from cls.types import Arrow, Constructor, Intersection
 
 garbage_repo = {
     "f": Arrow(Constructor("Int"), Constructor("Goal")),

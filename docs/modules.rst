@@ -1,8 +1,8 @@
 ==================
-Module: cls_python
+Module: cls-python
 ==================
 
-The cls_python module contains the following submodules:
+The cls module contains the following submodules:
 
 Submodules
 ----------

@@ -2,6 +2,6 @@
 Usage
 =====
 
-To use cls-python in a project::
+To use CLS in a project::
 
-    import cls_python
+    import cls
